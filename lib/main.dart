@@ -20,7 +20,6 @@ class MyColors {
     },
   );
 }
-
 void main() {
   runApp(MyApp());
 }
@@ -35,7 +34,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: MyColors.navy,
       ),
-      home: AboutKayseri(),
+      home: MyHomePage(),
     );
   }
 }
@@ -52,12 +51,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController searchControl = TextEditingController();
-
-
   get onPressed => null;
-
- 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
