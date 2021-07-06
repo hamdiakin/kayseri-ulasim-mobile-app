@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kayseri_ulasim/Drawer/about_kayseri.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
-class MyColors {
+import 'package:flutter/services.dart';
 
+class MyColors {
   static const MaterialColor navy = MaterialColor(
     0XFF263238,
     <int, Color>{
@@ -20,6 +21,7 @@ class MyColors {
     },
   );
 }
+
 void main() {
   runApp(MyApp());
 }
@@ -27,10 +29,11 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kayseri Ulaşım',
-      
       theme: ThemeData(
         primarySwatch: MyColors.navy,
       ),

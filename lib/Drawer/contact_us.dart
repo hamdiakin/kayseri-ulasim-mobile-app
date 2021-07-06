@@ -40,7 +40,7 @@ class ContactUs extends StatelessWidget {
               SizedBox(
                 height: MediaQuery.of(context).size.height*(1/23),
                 child: ListTile(
-                  leading: Icon(Icons.face_outlined),
+                  leading: Icon(Icons.dashboard),
                   title: Text("UlasimKayseri"),
                 ),
               ),
@@ -48,7 +48,7 @@ class ContactUs extends StatelessWidget {
               SizedBox(
                 height: MediaQuery.of(context).size.height*(1/23),
                 child: ListTile(
-                  leading: Icon(Icons.transfer_within_a_station),
+                  leading: Icon(Icons.scatter_plot_outlined),
                   title: Text("UlasimKayseri"),
                 ),
               ),
@@ -56,7 +56,7 @@ class ContactUs extends StatelessWidget {
               SizedBox(
                 height: MediaQuery.of(context).size.height*(1/23),
                 child: ListTile(
-                  leading: Icon(Icons.face_outlined),
+                  leading: Icon(Icons.language_sharp),
                   title: Text("UlasimKayseri"),
                 ),
               ),
