@@ -1,7 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kayseri_ulasim/Drawer/about_kayseri.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
-import 'package:flutter/services.dart';
+class MyColors {
+
+  static const MaterialColor navy = MaterialColor(
+    0XFF263238,
+    <int, Color>{
+      50: Color(0XFF263238),
+      100: Color(0XFF263238),
+      200: Color(0XFF263238),
+      300: Color(0XFF263238),
+      400: Color(0XFF263238),
+      500: Color(0XFF263238),
+      600: Color(0XFF263238),
+      700: Color(0XFF263238),
+      800: Color(0XFF263238),
+      900: Color(0XFF263238),
+    },
+  );
+}
 
 void main() {
   runApp(MyApp());
@@ -10,17 +28,14 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Kayseri Ulaşım',
+      
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: MyColors.navy,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: AboutKayseri(),
     );
   }
 }
@@ -37,13 +52,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController searchControl = TextEditingController();
-  var formKey = GlobalKey<FormState>();
+
 
   get onPressed => null;
 
-  void _incrementCounter() {
-    setState(() {});
-  }
+ 
 
   @override
   Widget build(BuildContext context) {

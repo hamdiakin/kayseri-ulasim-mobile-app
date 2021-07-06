@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:kayseri_ulasim/Drawer/contact_us.dart';
-import 'package:kayseri_ulasim/Drawer/routes.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+
+import 'about_kayseri.dart';
+import 'about_kayseri_ulasim.dart';
+import 'announcements.dart';
+import 'contact_us.dart';
+import 'settings.dart';
 
 class NavigationDrawer extends StatefulWidget {
   @override
@@ -34,7 +38,9 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           createDrawerBodyItem(
             icon: Icons.settings,
             text: 'Settings',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=> Settings()));
+            },
           ),
           createDrawerBodyItem(
             icon: Icons.help,
@@ -55,14 +61,16 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           createDrawerBodyItem(
             icon: Icons.bus_alert,
             text: 'About Kayseri Ulaşım',
-            onTap: () => Navigator.pushReplacementNamed(
-                context, PageRoutes.about_kayseri_ulasim),
+            onTap: ()  {
+               Navigator.push(context, MaterialPageRoute(builder: (context)=> AboutKayseriUlasim()));
+            }
           ),
           createDrawerBodyItem(
             icon: Icons.history_edu,
             text: 'About Kayseri',
-            onTap: () => Navigator.pushReplacementNamed(
-                context, PageRoutes.about_kayseri),
+            onTap: ()  {
+               Navigator.push(context, MaterialPageRoute(builder: (context)=> AboutKayseri()));
+            }
           ),
           Divider(),
           Padding(
@@ -70,21 +78,18 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             child: Text("İletişim"),
           ),
           createDrawerBodyItem(
-              icon: Icons.contact_page,
-              text: 'Contact Us',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                    builder: (context) => new ContactUs(),
-                  ),
-                );
-              }),
+            icon: Icons.contact_page,
+            text: 'Contact Us',
+            onTap: ()  {
+               Navigator.push(context, MaterialPageRoute(builder: (context)=> ContactUs()));
+            }
+          ),
           createDrawerBodyItem(
             icon: Icons.notifications,
             text: 'Announcements',
-            onTap: () => Navigator.pushReplacementNamed(
-                context, PageRoutes.announcements),
+            onTap: ()  {
+               Navigator.push(context, MaterialPageRoute(builder: (context)=> Announcements()));
+            }
           ),
           createDrawerBodyItem(
             icon: Icons.text_fields,
@@ -133,7 +138,11 @@ Widget createDrawerHeader() {
         SizedBox(
           width: 10,
         ),
-        Image.asset('assets/kbb.png', fit: BoxFit.fitHeight, height: 100),
+        Image.asset(
+          'assets/kbb.png',
+          fit: BoxFit.fitHeight,
+          height: 100
+        ),
         SizedBox(
           width: 20,
         ),
