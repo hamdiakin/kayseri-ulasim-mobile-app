@@ -11,7 +11,7 @@ class AboutKayseriUlasim extends StatelessWidget {
             child: Column(
           children: [
             Container(
-              height: (MediaQuery.of(context).size.height) * 5 / 20,
+              height: (MediaQuery.of(context).size.height) * 3 / 20,
               decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/kayseri_ulasim_hakkinda.jpg'),
@@ -20,7 +20,7 @@ class AboutKayseriUlasim extends StatelessWidget {
               ),
             ),
             Container(
-              height: (MediaQuery.of(context).size.height) * 12.8 / 20,
+              height: (MediaQuery.of(context).size.height) * 10.8 / 20,
               child: SingleChildScrollView(
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),

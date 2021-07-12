@@ -31,7 +31,7 @@ dependencies:
   url_launcher:
   http: ^0.13.3
   flutter_webview_plugin: ^0.4.0
-
+  location: ^4.3.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

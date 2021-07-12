@@ -1,26 +1,10 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kayseri_ulasim/Drawer/about_kayseri.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
-import 'package:flutter/services.dart';
-
-class MyColors {
-  static const MaterialColor navy = MaterialColor(
-    0XFF263238,
-    <int, Color>{
-      50: Color(0XFF263238),
-      100: Color(0XFF263238),
-      200: Color(0XFF263238),
-      300: Color(0XFF263238),
-      400: Color(0XFF263238),
-      500: Color(0XFF263238),
-      600: Color(0XFF263238),
-      700: Color(0XFF263238),
-      800: Color(0XFF263238),
-      900: Color(0XFF263238),
-    },
-  );
-}
+import 'package:http/http.dart' as http;
+import 'package:location/location.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,11 +16,8 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       title: 'Kayseri Ulaşım',
-      theme: ThemeData(
-        primarySwatch: MyColors.navy,
-      ),
       home: MyHomePage(),
     );
   }
@@ -45,17 +26,73 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
-  String wantedPosition;
-  String location;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  double ar = 0;
+
   TextEditingController searchControl = TextEditingController();
-  get onPressed => null;
+
+  // Parts that are related to functions to retrieve location data
+  bool _serviceEnabled = false;
+  PermissionStatus _permissionGranted = PermissionStatus.denied;
+  String lat = "";
+  String long = "";
+
+  Future<void> _getUserLocation() async {
+    Location location = new Location();
+
+    // Check if location service is enable
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return;
+      }
+    }
+
+    // Check if permission is granted
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return;
+      }
+    }
+
+    final _locationData = await location.getLocation();
+
+    setState(() {
+      lat = _locationData.latitude.toString();
+      long = _locationData.longitude.toString();
+    });
+  }
+
+  // For retrieving data from API services
+  List data;
+  Future<String> getData() async {
+    await _getUserLocation();
+    var response = await http.get(
+        Uri.parse(
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/nearest?lon=$long&lat=$lat"),
+        headers: {"Accept": "application/json"});
+    this.setState(() {
+      data = jsonDecode(response.body);
+    });
+    return "success";
+  }
+
+  String code = "";
   @override
+  void initState() {
+    super.initState();
+    _getUserLocation();
+    getData();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: NavigationDrawer(),
@@ -99,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               color: Colors.blueGrey.shade900,
               height: 70,
-              // Arama Butonu
+              // Search Button
               child: TextFormField(
                 maxLengthEnforcement: MaxLengthEnforcement.enforced,
                 cursorColor: Colors.blueGrey,
@@ -132,9 +169,85 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox(
               height: (MediaQuery.of(context).size.height) * (1 / 20),
             ),
+            // Closest bus stops
             Expanded(
-              child: Column(),
+              child: RefreshIndicator(
+                onRefresh: () {
+                  Navigator.pushReplacement(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (a, b, c) => MyApp(),
+                      transitionDuration: Duration(milliseconds: 5),
+                    ),
+                  );
+                  CircularProgressIndicator();
+                  return Future.value(true);
+                },
+                child: data == null
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : new ListView.builder(
+                        itemCount: data == null ? 0 : data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          getCode() {
+                            if ((data[index]["busStop"]["type"]) == "busStop") {
+                              code = data[index]["busStop"]["code"];
+                            } else {
+                              code = "";
+                            }
+                            return code;
+                          }
+
+                          return Column(
+                            children: [
+                              Card(
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(10),
+                                      topRight: Radius.circular(10)),
+                                ),
+                                color: getColor(index),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      onTap: () {},
+                                      // This part of the code decides whether the tram icon or the bus icon should be used
+                                      leading: Icon(
+                                        getCode() == ""
+                                            ? Icons.tram
+                                            : Icons.bus_alert,
+                                        color: getCode() == ""
+                                            ? Colors.red
+                                            : Colors.blue.shade700,
+                                      ),
+                                      title: Text(getCode() == ""
+                                          ? data[index]["busStop"]["name"]
+                                          : getCode() +
+                                              "  " +
+                                              data[index]["busStop"]["name"]),
+                                      subtitle: Text(
+                                          (data[index]["distance"] * 1000)
+                                                  .toInt()
+                                                  .toString() +
+                                              "m"),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 7.23,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+              ),
             ),
+
+            // Bottom of the page
             Container(
               height: (MediaQuery.of(context).size.height) * (1 / 10),
               width: MediaQuery.of(context).size.width,
@@ -166,5 +279,14 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  // To decide which texts and colors should be used in the app
+  getColor(int index) {
+    if (index % 2 == 0) {
+      return Colors.lightBlueAccent.shade100;
+    } else {
+      return Colors.white;
+    }
   }
 }
