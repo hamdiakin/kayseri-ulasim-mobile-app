@@ -5,9 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -35,25 +33,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double ar = 0;
-    String lonA="";
-  String latA = "";
-
-
-   GoogleMapController mapController;
-   Position _currentPosition;
-  String _currentAddress = '';
-  final startAddressController = TextEditingController();
-  final destinationAddressController = TextEditingController();
-
-  final startAddressFocusNode = FocusNode();
-  final desrinationAddressFocusNode = FocusNode();
-
-  String _startAddress = '';
-  
-
   TextEditingController searchControl = TextEditingController();
-    // Method for retrieving the current location
+
+  // Method for retrieving the current location
+  GoogleMapController mapController;
+  Position _currentPosition;
+
   _getUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) async {
@@ -68,75 +53,18 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         );
-        latA= _currentPosition.latitude.toString();
-        lonA= _currentPosition.longitude.toString();
       });
-      //await _getAddress();
     }).catchError((e) {
       print(e);
     });
   }
 
-  // Method for retrieving the address
-  _getAddress() async {
-    try {
-      List<Placemark> p = await placemarkFromCoordinates(
-          _currentPosition.latitude, _currentPosition.longitude);
-
-      Placemark place = p[0];
-
-      setState(() {
-        _currentAddress =
-        "${place.name}, ${place.locality}, ${place.postalCode}, ${place.country}";
-        startAddressController.text = _currentAddress;
-        _startAddress = _currentAddress;
-      });
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  /*// Parts that are related to functions to retrieve location data
-  bool _serviceEnabled = false;
-  PermissionStatus _permissionGranted = PermissionStatus.denied;
-  String lat = "";
-  String long = "";
-
-  Future<void> _getUserLocation() async {
-    Location location = new Location();
-
-    // Check if location service is enable
-    _serviceEnabled = await location.serviceEnabled();
-    if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
-      if (!_serviceEnabled) {
-        return;
-      }
-    }
-
-    // Check if permission is granted
-    _permissionGranted = await location.hasPermission();
-    if (_permissionGranted == PermissionStatus.denied) {
-      _permissionGranted = await location.requestPermission();
-      if (_permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    final _locationData = await location.getLocation();
-
-    setState(() {
-      lat = _locationData.latitude.toString();
-      long = _locationData.longitude.toString();
-    });
-  }*/
-
   // For retrieving data from API services
   List data;
   Future<String> getData() async {
     await _getUserLocation();
-     String lat= _currentPosition.latitude.toString();
-    String long= _currentPosition.longitude.toString();
+    String lat = _currentPosition.latitude.toString();
+    String long = _currentPosition.longitude.toString();
     var response = await http.get(
         Uri.parse(
             "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/nearest?lon=$long&lat=$lat"),
