@@ -3,6 +3,10 @@
    <application
         android:label="kayseri_ulasim"
         android:icon="@mipmap/ic_launcher">
+        <!--  Google Maps API key --> 
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyCrljTmnYhghD5HHDhs5Qf8GhpqxQeSjuE"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

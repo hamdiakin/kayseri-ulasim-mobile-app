@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:kayseri_ulasim/map/mapGoogle.dart';
 
 void main() {
   runApp(MyApp());
@@ -254,7 +255,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           Icons.map,
                           color: Colors.white,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                           Navigator.push(context, MaterialPageRoute(builder: (context) => mapGoogle(),));
+                        },
                       ),
                       Text(
                         "Harita",
