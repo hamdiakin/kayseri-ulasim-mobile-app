@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 
@@ -27,6 +25,8 @@ class _mapGoogleState extends State<mapGoogle> {
     addMarkers();
   }
 
+  // Serbest Vuruş
+
   // To reach API information
   List data;
 
@@ -40,9 +40,35 @@ class _mapGoogleState extends State<mapGoogle> {
     return "success";
   }
 
+  List data1;
+
+   Future<String> getData1(double lat, double long) async {
+    var response = await http.get(
+        Uri.parse(
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat+0.002},${long-0.002},${lat+0.002},${long+0.002},${lat-0.002},${long -0.002},${lat-0.002},${long+0.002}"),
+        headers: {"Accept": "application/json"});
+    this.data1 = jsonDecode(response.body);
+
+    return "success";
+  }
+
+  List<Location> locations1 = [
+    Location(38.7296, 35.515276, "nane"),
+  ];
+  // Adding locatiopn information of the bus stops into the list
+  addToList1() async {
+    for (var i = 0; i < data1.length; i++) {
+      locations1.add(Location(
+        data1[i]["latitude"],
+        data1[i]["longitude"],
+        data1[i]["name"],
+        
+      ));
+    }
+  }
+
   List<Location> locations = [
     Location(38.7296, 35.515276, "nane"),
-    
   ];
   // Adding locatiopn information of the bus stops into the list
   addToList() async {
@@ -61,7 +87,7 @@ class _mapGoogleState extends State<mapGoogle> {
 
   Set<KMarker> markersList = new Set();
 
-  void addMarkers()  {
+  void addMarkers() {
     int index = 0;
     locations.forEach((element) {
       final KMarker marker = KMarker(element.name,
@@ -71,7 +97,18 @@ class _mapGoogleState extends State<mapGoogle> {
           onTap: null);
       markersList.add(marker);
       index++;
-      
+    });
+  }
+   void addMarkers1() {
+    int index = 0;
+    locations1.forEach((element) {
+      final KMarker marker = KMarker(element.name,
+          id: MarkerId(index.toString()),
+          lat: element.lat,
+          lng: element.long,
+          onTap: null);
+      markersList.add(marker);
+      index++;
     });
   }
 
@@ -90,6 +127,15 @@ class _mapGoogleState extends State<mapGoogle> {
           backgroundColor: Colors.blueGrey.shade900,
         ),
         body: GoogleMap(
+          onCameraMove: (CameraPosition position) {
+            locations1.clear();
+            markersList.clear();
+            print("${position.target.latitude}  ${position.target.longitude}");
+            getData1(position.target.latitude, position.target.longitude);
+            addToList1();
+            addMarkers1(); 
+            print("http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${position.target.latitude+0.002},${position.target.longitude-0.002},${position.target.latitude+0.002},${position.target.longitude+0.002},${position.target.latitude-0.002},${position.target.longitude -0.002},${position.target.latitude-0.002},${position.target.longitude+0.002}");
+          },
           onMapCreated: _onMapCreated,
           markers: markersList,
           initialCameraPosition: CameraPosition(
