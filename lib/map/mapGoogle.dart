@@ -1,12 +1,10 @@
 import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
-
 
 class mapGoogle extends StatefulWidget {
   const mapGoogle({Key key}) : super(key: key);
@@ -35,7 +33,6 @@ class _mapGoogleState extends State<mapGoogle> {
             ),
           ),
         );
-
       });
       //await _getAddress();
     }).catchError((e) {
@@ -85,13 +82,12 @@ class _mapGoogleState extends State<mapGoogle> {
   Future<String> getData1(double lat, double long) async {
     var response = await http.get(
         Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat + 0.002},${long - 0.002},${lat + 0.002},${long + 0.002},${lat - 0.002},${long - 0.002},${lat - 0.002},${long + 0.002}"),
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat + 0.009},${long - 0.009},${lat + 0.009},${long + 0.009},${lat - 0.009},${long - 0.009},${lat - 0.009},${long + 0.009}"),
         headers: {"Accept": "application/json"});
     this.data1 = jsonDecode(response.body);
 
     return "success";
   }
-
 
   List<Location> locations = [];
   // Adding location information of the bus stops into the list
@@ -105,6 +101,7 @@ class _mapGoogleState extends State<mapGoogle> {
       ));
     }
   }
+
   List<Location> locations1 = [];
   // Adding location information of the bus stops into the list
   addToList1() async {
@@ -126,7 +123,7 @@ class _mapGoogleState extends State<mapGoogle> {
   void addMarkers() {
     int index = 0;
     locations.forEach((element) {
-      final KMarker marker = KMarker(element.name,
+      final KMarker marker = KMarker(element.name, pinLocationIcon,
           id: MarkerId(index.toString()),
           lat: element.lat,
           lng: element.long,
@@ -139,7 +136,7 @@ class _mapGoogleState extends State<mapGoogle> {
   void addMarkers1() {
     int index = 0;
     locations1.forEach((element) {
-      final KMarker marker = KMarker(element.name,
+      final KMarker marker = KMarker(element.name, pinLocationIcon,
           id: MarkerId(index.toString()),
           lat: element.lat,
           lng: element.long,
@@ -149,13 +146,18 @@ class _mapGoogleState extends State<mapGoogle> {
     });
   }
 
-
+  BitmapDescriptor pinLocationIcon;
   @override
   void initState() {
+
     super.initState();
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(devicePixelRatio: 2.5), 'assets/marker.png')
+        .then((onValue) {
+      pinLocationIcon = onValue;
+    });
     _getUserLocation();
     getData();
-
   }
 
   Widget build(BuildContext context) {
@@ -180,7 +182,7 @@ class _mapGoogleState extends State<mapGoogle> {
               });
 
               print(
-                  "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${position.target.latitude + 0.002},${position.target.longitude - 0.002},${position.target.latitude + 0.002},${position.target.longitude + 0.002},${position.target.latitude - 0.002},${position.target.longitude - 0.002},${position.target.latitude - 0.002},${position.target.longitude + 0.002}");
+                  "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${position.target.latitude + 0.009},${position.target.longitude - 0.009},${position.target.latitude + 0.009},${position.target.longitude + 0.009},${position.target.latitude - 0.009},${position.target.longitude - 0.009},${position.target.latitude - 0.009},${position.target.longitude + 0.009}");
             },
             onMapCreated: _onMapCreated,
             markers: markersList,
