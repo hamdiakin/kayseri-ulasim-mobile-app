@@ -256,7 +256,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white,
                         ),
                         onPressed: () {
-                           Navigator.push(context, MaterialPageRoute(builder: (context) => mapGoogle(),));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => mapGoogle(),
+                              ));
                         },
                       ),
                       Text(
