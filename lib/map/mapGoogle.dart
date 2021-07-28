@@ -24,7 +24,6 @@ class _mapGoogleState extends State<mapGoogle> {
         .then((Position position) async {
       setState(() {
         _currentPosition = position;
-        print('CURRENT POS: $_currentPosition');
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
             CameraPosition(
@@ -146,10 +145,19 @@ class _mapGoogleState extends State<mapGoogle> {
     });
   }
 
+  void updateFunction(CameraPosition position) {
+    locations1.clear();
+    markersList.clear();
+    getData1(position.target.latitude, position.target.longitude);
+    addToList1();
+    setState(() {
+      addMarkers1();
+    });
+  }
+
   BitmapDescriptor pinLocationIcon;
   @override
   void initState() {
-
     super.initState();
     BitmapDescriptor.fromAssetImage(
             ImageConfiguration(devicePixelRatio: 2.5), 'assets/marker.png')
@@ -167,62 +175,55 @@ class _mapGoogleState extends State<mapGoogle> {
           title: Text('Maps Sample'),
           backgroundColor: Colors.blueGrey.shade900,
         ),
-        body: Stack(children: <Widget>[
-          GoogleMap(
-            onCameraMove: (CameraPosition position) {
-              locations1.clear();
-              markersList.clear();
-              print(
-                  "${position.target.latitude}  ${position.target.longitude}");
-              getData1(position.target.latitude, position.target.longitude);
-              addToList1();
-              // To update the markerList
-              setState(() {
-                addMarkers1();
-              });
-
-              print(
-                  "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${position.target.latitude + 0.009},${position.target.longitude - 0.009},${position.target.latitude + 0.009},${position.target.longitude + 0.009},${position.target.latitude - 0.009},${position.target.longitude - 0.009},${position.target.latitude - 0.009},${position.target.longitude + 0.009}");
-            },
-            onMapCreated: _onMapCreated,
-            markers: markersList,
-            initialCameraPosition: _initialLocation,
-          ),
-          SafeArea(
-            child: Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                child: ClipOval(
-                  child: Material(
-                    color: Colors.orange.shade100, // button color
-                    child: InkWell(
-                      splashColor: Colors.orange, // inkwell color
-                      child: SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: Icon(Icons.my_location),
-                      ),
-                      onTap: () {
-                        mapController.animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: LatLng(
-                                _currentPosition.latitude,
-                                _currentPosition.longitude,
+        body: Stack(
+          children: <Widget>[
+            GoogleMap(
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              minMaxZoomPreference: MinMaxZoomPreference(2, 15),
+              onCameraMove: (CameraPosition position) {
+                updateFunction(position);
+              },
+              onMapCreated: _onMapCreated,
+              markers: markersList,
+              initialCameraPosition: _initialLocation,
+            ),
+            SafeArea(
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
+                  child: ClipOval(
+                    child: Material(
+                      color: Colors.orange.shade100, // button color
+                      child: InkWell(
+                        splashColor: Colors.orange, // inkwell color
+                        child: SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: Icon(Icons.my_location),
+                        ),
+                        onTap: () {
+                          mapController.animateCamera(
+                            CameraUpdate.newCameraPosition(
+                              CameraPosition(
+                                target: LatLng(
+                                  _currentPosition.latitude,
+                                  _currentPosition.longitude,
+                                ),
+                                zoom: 18.0,
                               ),
-                              zoom: 18.0,
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ]),
+          ],
+        ),
       ),
     );
   }
