@@ -4,32 +4,78 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class BusStopPage extends StatefulWidget {
-  const BusStopPage({Key key}) : super(key: key);
+  final String busStopName;
+  final String busStopCode;
+  const BusStopPage({Key key, this.busStopName, this.busStopCode})
+      : super(key: key);
 
   @override
   _BusStopPageState createState() => _BusStopPageState();
 }
 
 class _BusStopPageState extends State<BusStopPage> {
-  Timer timer;
-  List aData;
-  Future<List> getBusLines() async {
-    var response = await http.get(Uri.parse(
-        "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/code/12/buslines?cityId=6"));
-    this.aData = jsonDecode(response.body);
-    return aData;
+  // Lists are containing code information and the index of the code within the data source.
+  List<String> _selectedCodeList = [];
+  List<int> _selectedIndexList1 = [];
+
+  // Bool selectionState is a key factor of the function of the page, it will be used to decide if the block is selected or not.
+  bool selectionState = false;
+  Future<List> fAprLines;
+
+  // _changeSelection function adds or deletes the wanted data from the above list
+  void _changeSelection({String code, int index}) {
+    if (_selectedCodeList.contains(code) == false) {
+      _selectedCodeList.add(code);
+      _selectedIndexList1.add(index);
+    } else if (_selectedCodeList.contains(code)) {
+      _selectedCodeList.remove(code);
+      _selectedIndexList1.remove(index);
+    }
+    if (_selectedCodeList.isNotEmpty) {
+      selectionState = true;
+    } else if (_selectedCodeList.isEmpty) {
+      selectionState = false;
+    }
   }
 
-  List bData;
-  Future<List> aprBusLines() async {
+  // This function and list hold the information of the bus lines that passes through the bus stop
+  List busLinesData;
+  Future<List> getBusLines() async {
     var response = await http.get(Uri.parse(
-        "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/code/5/buses"));
-    this.bData = jsonDecode(response.body);
-    return bData;
+        "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/code/${widget.busStopCode}/buslines?cityId=6"));
+    if (response.statusCode == 200) {
+      this.busLinesData = jsonDecode(response.body);
+      return busLinesData;
+    }
   }
 
   Future<List> busLineData;
+
+  // This function and list hold the information of the approaching lines to the bus stop - generally under 60 minutes
+  List aprLinesData;
+  Future<List> aprBusLines() async {
+    var response = await http.get(Uri.parse(
+        "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/code/${widget.busStopCode}/buses"));
+    if (response.statusCode == 200) {
+      this.aprLinesData = jsonDecode(response.body);
+      return aprLinesData;
+    }
+  }
+
   Future<List> aprLineData;
+
+  // This function compares the name of the bus line to the approcahing lines and returns, if there is, the time for a bus to come to the bus stop
+  String getTimetoStop(String name) {
+    for (var i = 0; i < aprLinesData.length; i++) {
+      if (aprLinesData[i]["line"]["name"] == name) {
+        return aprLinesData[i]["timeToStop"].toString() + " dk";
+      }
+    }
+    return "Please click to see the details of bus lines. ";
+  }
+
+  // Timer is used to refresh the page state to aquaire present time left to the bus stop
+  Timer timer;
   @override
   void initState() {
     super.initState();
@@ -48,7 +94,7 @@ class _BusStopPageState extends State<BusStopPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Bus Stop Page '),
+          title: Text(widget.busStopName),
           backgroundColor: Colors.blueGrey.shade900,
         ),
         body: Center(
@@ -69,6 +115,7 @@ class _BusStopPageState extends State<BusStopPage> {
               SizedBox(
                 height: 20,
               ),
+              // This part of the screen shows the lines passing through the bus stop
               Expanded(
                 flex: 1,
                 child: SizedBox(
@@ -83,14 +130,32 @@ class _BusStopPageState extends State<BusStopPage> {
                                     childAspectRatio: 6 / 2,
                                     crossAxisSpacing: 7,
                                     mainAxisSpacing: 17),
-                            itemCount: aData.length,
+                            itemCount: busLinesData.length,
                             itemBuilder: (BuildContext ctx, index) {
-                              return Container(
-                                alignment: Alignment.center,
-                                child: Text(snapshot.data[index]["code"]),
-                                decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(6)),
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _changeSelection(
+                                        index: index,
+                                        code: snapshot.data[index]["code"]);
+                                  });
+                                  // To show which lines are included to "selectedIndexes"
+                                  /* for (var i = 0;
+                                      i < _selectedCodeList.length;
+                                      i++) {
+                                    print(_selectedCodeList[i]);
+                                  } */
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: Text(snapshot.data[index]["code"]),
+                                  decoration: BoxDecoration(
+                                      color: _selectedCodeList.contains(
+                                              snapshot.data[index]["code"])
+                                          ? Colors.grey[500]
+                                          : Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(6)),
+                                ),
                               );
                             });
                       }
@@ -112,6 +177,7 @@ class _BusStopPageState extends State<BusStopPage> {
                   title: Text("Lines Approaching to the Stop"),
                 ),
               ),
+              // This part of the screen shows the bus lines that are approaching to the bus stop - approximetly, under, 60 minutes away
               Expanded(
                 flex: 2,
                 child: SizedBox(
@@ -123,17 +189,22 @@ class _BusStopPageState extends State<BusStopPage> {
                       CircularProgressIndicator();
                       return Future.value(true);
                     },
-                    child: bData == null
+                    child: aprLinesData == null
                         ? Center(
                             child: CircularProgressIndicator(),
                           )
                         : FutureBuilder<List>(
-                            future: aprLineData,
+                            // When the selectionState changes the items that will be shown are also going to change
+                            future: selectionState == true
+                                ? fAprLines
+                                : aprLineData,
                             builder: (context, snapshot) {
                               if (snapshot.hasData) {
                                 return ListView.builder(
-                                  // Dont forget to add proper values
-                                  itemCount: bData.length,
+                                  // Changes with selectionState information
+                                  itemCount: selectionState == true
+                                      ? _selectedIndexList1.length
+                                      : aprLinesData.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
                                     return Column(
@@ -150,15 +221,34 @@ class _BusStopPageState extends State<BusStopPage> {
                                             children: <Widget>[
                                               ListTile(
                                                 onTap: () {},
-                                                leading: Icon(
-                                                  Icons.bus_alert,
-                                                  color: Colors.blue.shade700,
-                                                ),
-                                                title: Text(bData[index]["line"]
-                                                    ["name"]),
-                                                subtitle: Text(bData[index]
-                                                        ["timeToStop"]
-                                                    .toString()),
+                                                leading: widget.busStopCode
+                                                            .length >
+                                                        5
+                                                    ? Icon(
+                                                        Icons.tram,
+                                                        color: Colors.red,
+                                                      )
+                                                    : Icon(
+                                                        Icons.directions_bus,
+                                                        color: Colors
+                                                            .blue.shade700,
+                                                      ),
+                                                title: selectionState == true
+                                                    ? (Text(busLinesData[
+                                                        _selectedIndexList1[
+                                                            index]]["name"]))
+                                                    : Text(aprLinesData[index]
+                                                        ["line"]["name"]),
+                                                subtitle: Text(selectionState ==
+                                                        true
+                                                    ? getTimetoStop(
+                                                        busLinesData[
+                                                            _selectedIndexList1[
+                                                                index]]["name"])
+                                                    : aprLinesData[index]
+                                                                ["timeToStop"]
+                                                            .toString() +
+                                                        " dk"),
                                               ),
                                             ],
                                           ),
@@ -168,7 +258,8 @@ class _BusStopPageState extends State<BusStopPage> {
                                   },
                                 );
                               }
-                              return Text("error");
+                              // return Text("error");
+                              return CircularProgressIndicator();
                             },
                           ),
                   ),

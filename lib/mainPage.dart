@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/main.dart';
 import 'package:kayseri_ulasim/map/mapGoogle.dart';
+import 'package:kayseri_ulasim/pages/busStop.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -188,12 +189,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: <Widget>[
                                     ListTile(
-                                      onTap: () {},
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    BusStopPage(
+                                                      busStopName: getCode() +
+                                                          " " +
+                                                          data[index]["busStop"]
+                                                              ["name"],
+                                                      busStopCode: data[index]["busStop"]["code"],
+                                                    )));
+                                      },
                                       // This part of the code decides whether the tram icon or the bus icon should be used
                                       leading: Icon(
                                         getCode() == ""
                                             ? Icons.tram
-                                            : Icons.bus_alert,
+                                            : Icons.directions_bus,
                                         color: getCode() == ""
                                             ? Colors.red
                                             : Colors.blue.shade700,
@@ -240,7 +253,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white,
                         ),
                         onPressed: () {
-                           Navigator.push(context, MaterialPageRoute(builder: (context) => mapGoogle(),));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => mapGoogle(),
+                              ));
                         },
                       ),
                       Text(
