@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kayseri_ulasim/BusDetails/line_timings.dart';
 import 'package:kayseri_ulasim/mainPage.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: true,
       title: 'Kayseri Ulaşım',
-      home: MyHomePage(),
+      home:MyHomePage(),
     );
   }
 }
