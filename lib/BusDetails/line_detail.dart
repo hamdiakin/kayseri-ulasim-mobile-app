@@ -26,7 +26,7 @@ class _LineDetailState extends State<LineDetail> {
   String direction = "DEPARTURE"; // to change the direction when pressed the icons
 
   List lineDetail;
-  Future<String> getBusLine() async {  //get data
+  Future<List<dynamic>> getBusLine() async {  //get data
     var response = await http.get(
         Uri.parse(
             "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/${busCode}/buses/direction=$direction"),
@@ -34,12 +34,12 @@ class _LineDetailState extends State<LineDetail> {
     this.setState(() {
       lineDetail = jsonDecode(response.body);
     });
-    return "success";
+    return lineDetail; // all the data about a line
   }
 
   @override
   void initState() {
-    getBusLine();
+ getBusLine(); //make sure the data is taken before launching
     // TODO: implement initState
     super.initState();
   }
@@ -51,7 +51,7 @@ class _LineDetailState extends State<LineDetail> {
       appBar: AppBar
         (
         backgroundColor: Colors.blueGrey.shade900,
-        title: Text("$busStopName"),
+        title: Text("$busStopName"),// the name of bus got from busStop page
       ),
       body: Column(
         children: [
@@ -63,7 +63,7 @@ class _LineDetailState extends State<LineDetail> {
                 width: (MediaQuery.of(context).size.height) * 3.52 / 20,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black38),
-                  color: _colorContainer,
+                  color: _colorContainer, //determine which color will be given on clicked
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -72,7 +72,7 @@ class _LineDetailState extends State<LineDetail> {
                       onTap: () {
 
                         setState(() {
-                          _colorContainer =Colors.black12;
+                          _colorContainer =Colors.black12; //when clicked change the color
                         });
                         Navigator.push(
                             context,
@@ -154,7 +154,7 @@ class _LineDetailState extends State<LineDetail> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LineTimings(busStopName, busCode, lineDetail[0]["stop"]["name"],  lineDetail[lineDetail.length-1]["stop"]["name"])));
+                                builder: (context) => LineTimings(busStopName, busCode, lineDetail[0]["stop"]["name"],  lineDetail[lineDetail.length-1]["stop"]["name"])));//send the required parameters to linetimings page
                       },
                       child: Container(
                           child: Column(
@@ -235,7 +235,7 @@ class _LineDetailState extends State<LineDetail> {
                               ),
                               onPressed: () {
                                 setState(() {
-                                  direction = "ARRIVAL";
+                                  direction = "ARRIVAL"; //change the listView vice versa when clicked
                                 });
                                 getBusLine();
                               },
@@ -252,7 +252,7 @@ class _LineDetailState extends State<LineDetail> {
           ),
           Expanded(
             flex: 3,
-            child: lineDetail == null
+            child: lineDetail == null// check if data available
                 ? Center(
                     child: CircularProgressIndicator(),
                   )
@@ -277,7 +277,7 @@ class _LineDetailState extends State<LineDetail> {
                                   // This part of the code decides whether the tram icon or the bus icon should be used
                                   leading: Icon(Icons.directions_bus),
                                   title: Text(
-                                    lineDetail[index]["stop"]["name"],
+                                    lineDetail[index]["stop"]["name"], //show the stops that a bus passes from
                                     maxLines: 1,
                                   ),
                                 ),
