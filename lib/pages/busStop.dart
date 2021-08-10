@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/database/database_helper.dart';
 
 class BusStopPage extends StatefulWidget {
   final String busStopName;
@@ -14,6 +15,9 @@ class BusStopPage extends StatefulWidget {
 }
 
 class _BusStopPageState extends State<BusStopPage> {
+  // For local database
+  final dbHelper = DatabaseHelper.instance;
+
   // Lists are containing code information and the index of the code within the data source.
   List<String> _selectedCodeList = [];
   List<int> _selectedIndexList1 = [];
@@ -74,6 +78,16 @@ class _BusStopPageState extends State<BusStopPage> {
     return "Please click to see the details of bus lines. ";
   }
 
+  // To check if exist in the db
+  bool check = false;
+  inCheck() async {
+    bool propCheck = await dbHelper.ifContains(widget.busStopName);
+    print(propCheck);
+    setState(() {
+      check = propCheck;
+    });
+  }
+
   // Timer is used to refresh the page state to aquaire present time left to the bus stop
   Timer timer;
   @override
@@ -86,15 +100,37 @@ class _BusStopPageState extends State<BusStopPage> {
         (Timer t) => setState(() {
               aprLineData = aprBusLines();
             }));
+    inCheck();
   }
 
   @override
   Widget build(BuildContext context) {
-    getBusLines();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text(widget.busStopName),
+          actions: <Widget>[
+            IconButton(
+              icon: check == true
+                  ? Icon(
+                      Icons.star,
+                      color: Colors.yellowAccent,
+                    )
+                  : Icon(
+                      Icons.star_border,
+                      color: Colors.yellowAccent,
+                    ),
+              onPressed: () {
+                inCheck();
+                if (check)
+                  dbHelper.delete1(widget.busStopName);
+                else
+                  _insert(widget.busStopName, widget.busStopCode);
+                _query();
+                inCheck();
+              },
+            )
+          ],
           backgroundColor: Colors.blueGrey.shade900,
         ),
         body: Center(
@@ -189,79 +225,71 @@ class _BusStopPageState extends State<BusStopPage> {
                       CircularProgressIndicator();
                       return Future.value(true);
                     },
-                    child: aprLinesData == null
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : FutureBuilder<List>(
-                            // When the selectionState changes the items that will be shown are also going to change
-                            future: selectionState == true
-                                ? fAprLines
-                                : aprLineData,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                return ListView.builder(
-                                  // Changes with selectionState information
-                                  itemCount: selectionState == true
-                                      ? _selectedIndexList1.length
-                                      : aprLinesData.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    return Column(
-                                      children: [
-                                        Card(
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.only(
-                                                bottomRight:
-                                                    Radius.circular(10),
-                                                topRight: Radius.circular(10)),
-                                          ),
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              ListTile(
-                                                onTap: () {},
-                                                leading: widget.busStopCode
-                                                            .length >
-                                                        5
-                                                    ? Icon(
-                                                        Icons.tram,
-                                                        color: Colors.red,
-                                                      )
-                                                    : Icon(
-                                                        Icons.directions_bus,
-                                                        color: Colors
-                                                            .blue.shade700,
-                                                      ),
-                                                title: selectionState == true
-                                                    ? (Text(busLinesData[
-                                                        _selectedIndexList1[
-                                                            index]]["name"]))
-                                                    : Text(aprLinesData[index]
-                                                        ["line"]["name"]),
-                                                subtitle: Text(selectionState ==
-                                                        true
-                                                    ? getTimetoStop(
-                                                        busLinesData[
-                                                            _selectedIndexList1[
-                                                                index]]["name"])
-                                                    : aprLinesData[index]
-                                                                ["timeToStop"]
-                                                            .toString() +
-                                                        " dk"),
-                                              ),
-                                            ],
-                                          ),
+                    child: FutureBuilder<List>(
+                      // When the selectionState changes the items that will be shown are also going to change
+                      future: selectionState == true ? fAprLines : aprLineData,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return ListView.builder(
+                            // Changes with selectionState information
+                            itemCount: selectionState == true
+                                ? _selectedIndexList1.length
+                                : aprLinesData.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Column(
+                                children: [
+                                  Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          bottomRight: Radius.circular(10),
+                                          topRight: Radius.circular(10)),
+                                    ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        ListTile(
+                                          onTap: () {},
+                                          leading: widget.busStopCode.length > 5
+                                              ? Icon(
+                                                  Icons.tram,
+                                                  color: Colors.red,
+                                                )
+                                              : Icon(
+                                                  Icons.directions_bus,
+                                                  color: Colors.blue.shade700,
+                                                ),
+                                          title: selectionState == true
+                                              ? (Text(busLinesData[
+                                                  _selectedIndexList1[
+                                                      index]]["name"]))
+                                              : Text(aprLinesData[index]["line"]
+                                                  ["name"]),
+                                          subtitle: Text(selectionState == true
+                                              ? getTimetoStop(busLinesData[
+                                                  _selectedIndexList1[
+                                                      index]]["name"])
+                                              : aprLinesData[index]
+                                                          ["timeToStop"]
+                                                      .toString() +
+                                                  " dk"),
                                         ),
                                       ],
-                                    );
-                                  },
-                                );
-                              }
-                              // return Text("error");
-                              return CircularProgressIndicator();
+                                    ),
+                                  ),
+                                ],
+                              );
                             },
-                          ),
+                          );
+                        }
+                        //return Text("error");
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            LinearProgressIndicator(),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -270,5 +298,21 @@ class _BusStopPageState extends State<BusStopPage> {
         ),
       ),
     );
+  }
+
+  void _insert(String name1, String code2) async {
+    // row to insert
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnName: '$name1',
+      DatabaseHelper.columnCode: '$code2'
+    };
+    final id = await dbHelper.insert(row);
+    print('inserted row id: $id');
+  }
+
+  void _query() async {
+    final allRows = await dbHelper.queryAllRows();
+    print('query all rows:');
+    allRows.forEach(print);
   }
 }
