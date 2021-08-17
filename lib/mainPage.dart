@@ -142,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 70,
                 // Search Button
                 child: TextFormField(
+                  onTap: (){},
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   cursorColor: Colors.blueGrey,
                   controller: searchControl,
@@ -236,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // Closest bus stops
               Text("Closest"),
               Expanded(
-                flex: favLength == 0 ? 4 : 3,
+                flex: favLength == 0 ? 4 : 2,
                 child: RefreshIndicator(
                   onRefresh: () {
                     Navigator.pushReplacement(
