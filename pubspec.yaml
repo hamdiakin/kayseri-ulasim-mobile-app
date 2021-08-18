@@ -37,6 +37,10 @@ dependencies:
   sqflite: ^2.0.0+3
   path_provider: ^2.0.2
   provider: ^5.0.0
+  android_alarm_manager: ^2.0.2
+  flutter_local_notifications: ^8.1.1+1
+  multiselect_formfield: ^0.1.6
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

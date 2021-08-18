@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 
 class BusStopPage extends StatefulWidget {
@@ -248,7 +249,13 @@ class _BusStopPageState extends State<BusStopPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         ListTile(
-                                          onTap: () {},
+                                         onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              LineDetail("${aprLinesData[index]["line"]["name"]}","${aprLinesData[index]["line"]["code"]}" )));
+                                                },
                                           leading: widget.busStopCode.length > 5
                                               ? Icon(
                                                   Icons.tram,
