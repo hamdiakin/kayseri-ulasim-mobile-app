@@ -1,12 +1,15 @@
+import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:kayseri_ulasim/BusDetails/line_timings.dart';
-import 'package:kayseri_ulasim/mainPage.dart';
+import 'Alarm/set_an_alarm.dart';
 
-void main() {
+void main() async{
   runApp(MyApp());
+  await AndroidAlarmManager.initialize();
 }
 
+
+List<String> emptyList=[];
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: true,
       title: 'Kayseri Ulaşım',
-      home:MyHomePage(),
+      home:SetAnAlarm(),
     );
   }
 }

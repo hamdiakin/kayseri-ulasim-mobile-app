@@ -31,9 +31,10 @@ class _LineInformationState extends State<LineInformation> {
     return "success";
   }
 
-  GoogleMapController mapController; //to create the map
+  GoogleMapController mapController; //to create the Map
   Position _currentPosition; // zoom to my location
-  CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));// initial position
+  CameraPosition _initialLocation =
+      CameraPosition(target: LatLng(0.0, 0.0)); // initial position
 
   // Method for retrieving the current location
   _getUserLocation() async {
@@ -74,7 +75,7 @@ class _LineInformationState extends State<LineInformation> {
         ),
       );
     });
-    // Adding markers to marker list and eventually to the map
+    // Adding markers to marker list and eventually to the Map
     addMarkers();
   }
 
@@ -115,8 +116,8 @@ class _LineInformationState extends State<LineInformation> {
   void initState() {
     super.initState();
     //creating markers
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(devicePixelRatio: 2.5), 'assets/busStopMarker.png')
+    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
+            'assets/busStopMarker.png')
         .then((onValue) {
       pinLocationIcon = onValue;
     });
@@ -145,7 +146,6 @@ class _LineInformationState extends State<LineInformation> {
             markers: markersList,
             initialCameraPosition: _initialLocation,
           ),
-
         ]),
       ),
     );

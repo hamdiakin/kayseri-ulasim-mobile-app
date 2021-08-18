@@ -6,14 +6,14 @@ import 'package:kayseri_ulasim/map/locations.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 
-class mapGoogle extends StatefulWidget {
-  const mapGoogle({Key key}) : super(key: key);
+class MapGoogle extends StatefulWidget {
+  const MapGoogle({Key key}) : super(key: key);
 
   @override
-  _mapGoogleState createState() => _mapGoogleState();
+  _MapGoogleState createState() => _MapGoogleState();
 }
 
-class _mapGoogleState extends State<mapGoogle> {
+class _MapGoogleState extends State<MapGoogle> {
   CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
   GoogleMapController mapController;
   Position _currentPosition;
@@ -52,6 +52,7 @@ class _mapGoogleState extends State<mapGoogle> {
     this.setState(() {
       data = jsonDecode(response.body);
     });
+    return "Success";
   }
 
   void _onMapCreated(GoogleMapController controller) async {
@@ -72,7 +73,7 @@ class _mapGoogleState extends State<mapGoogle> {
         ),
       );
     });
-    // Adding markers to marker list and eventually to the map
+    // Adding markers to marker list and eventually to the Map
     addMarkers();
   }
 

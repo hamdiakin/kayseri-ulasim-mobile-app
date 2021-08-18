@@ -97,7 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         Icons.add_alert_sharp,
                         color: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        //  Navigator.push(context, MaterialPageRoute(builder: (context)=>GetNotification()));
+                      },
                     )
                   ],
                 ),
@@ -199,7 +201,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                           " " +
                                                           data[index]["busStop"]
                                                               ["name"],
-                                                      busStopCode: data[index]["busStop"]["code"],
+                                                      busStopCode: data[index]
+                                                          ["busStop"]["code"],
                                                     )));
                                       },
                                       // This part of the code decides whether the tram icon or the bus icon should be used
@@ -256,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => mapGoogle(),
+                                builder: (context) => MapGoogle(),
                               ));
                         },
                       ),

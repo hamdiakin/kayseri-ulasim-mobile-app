@@ -48,6 +48,7 @@ class _BusStopPageState extends State<BusStopPage> {
       this.busLinesData = jsonDecode(response.body);
       return busLinesData;
     }
+    return busLinesData;
   }
 
   Future<List> busLineData;
@@ -61,11 +62,12 @@ class _BusStopPageState extends State<BusStopPage> {
       this.aprLinesData = jsonDecode(response.body);
       return aprLinesData;
     }
+    return aprLinesData;
   }
 
   Future<List> aprLineData;
 
-  // This function compares the name of the bus line to the approcahing lines and returns, if there is, the time for a bus to come to the bus stop
+  // This function compares the name of the bus line to the approaching lines and returns, if there is, the time for a bus to come to the bus stop
   String getTimetoStop(String name) {
     for (var i = 0; i < aprLinesData.length; i++) {
       if (aprLinesData[i]["line"]["name"] == name) {

@@ -29,7 +29,7 @@ class _LineDetailState extends State<LineDetail> {
   Future<List<dynamic>> getBusLine() async {  //get data
     var response = await http.get(
         Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/${busCode}/buses/direction=$direction"),
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=$direction"),
         headers: {"Accept": "application/json"});
     this.setState(() {
       lineDetail = jsonDecode(response.body);
@@ -193,7 +193,7 @@ class _LineDetailState extends State<LineDetail> {
                       child: Container(
                         width: (MediaQuery.of(context).size.width) * 12 / 20,
                         child: Text(
-                        "${busStopName} Direction",
+                        "$busStopName Direction",
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 15.0),
