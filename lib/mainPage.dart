@@ -10,6 +10,7 @@ import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/main.dart';
 import 'package:kayseri_ulasim/map/mapGoogle.dart';
 import 'package:kayseri_ulasim/pages/busStop.dart';
+import 'package:kayseri_ulasim/pages/searchPage.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -39,8 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
   getNumber() async {
     var x = await DatabaseHelper.instance.queryRowCount();
     print(x);
-    print("fbhxsdkmşdsklfvbjbnsmlşmdvbjfkxsdvl");
-    favLength = x;
+    setState(() {
+      favLength = x;
+    });
   }
 
   // Method for retrieving the current location
@@ -79,9 +81,6 @@ class _MyHomePageState extends State<MyHomePage> {
         headers: {"Accept": "application/json"});
     setState(() {
       data = jsonDecode(response.body);
-    });
-    setState(() {
-      data;
     });
     return "success";
   }
@@ -142,7 +141,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 70,
                 // Search Button
                 child: TextFormField(
-                  onTap: (){},
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
+                  },
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   cursorColor: Colors.blueGrey,
                   controller: searchControl,

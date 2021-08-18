@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/database/database_helper.dart';
+import 'package:kayseri_ulasim/pages/stopTimesforLines.dart';
 
 class BusStopPage extends StatefulWidget {
   final String busStopName;
@@ -272,6 +273,42 @@ class _BusStopPageState extends State<BusStopPage> {
                                                           ["timeToStop"]
                                                       .toString() +
                                                   " dk"),
+                                          trailing: SizedBox(
+                                            height: 30.0,
+                                            width: 60.0,
+                                            child: IconButton(
+                                                padding:
+                                                    new EdgeInsets.all(0.0),
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder:
+                                                              (context) =>
+                                                                  StopTimes(
+                                                                    busName: selectionState ==
+                                                                            true
+                                                                        ? busLinesData[_selectedIndexList1[index]]
+                                                                            [
+                                                                            "name"]
+                                                                        : aprLinesData[index]["line"]
+                                                                            [
+                                                                            "name"],
+                                                                    busLineCode:
+                                                                        selectionState == true ? busLinesData[_selectedIndexList1[index]]
+                                                                            [
+                                                                            "code"] : aprLinesData[index]["line"]
+                                                                            [
+                                                                            "code"],
+                                                                    busStopCode:
+                                                                        widget.busStopCode,
+                                                                  )));
+                                                },
+                                                icon: Icon(
+                                                  Icons.access_alarm_outlined,
+                                                  color: Colors.blue.shade700,
+                                                )),
+                                          ),
                                         ),
                                       ],
                                     ),
