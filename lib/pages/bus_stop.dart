@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
-import 'package:kayseri_ulasim/pages/stopTimesforLines.dart';
+import 'package:kayseri_ulasim/pages/line_stop_times.dart';
 
 class BusStopPage extends StatefulWidget {
   final String busStopName;

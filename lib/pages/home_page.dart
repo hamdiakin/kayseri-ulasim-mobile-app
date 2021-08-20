@@ -8,9 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/main.dart';
-import 'package:kayseri_ulasim/map/mapGoogle.dart';
+import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
-import 'package:kayseri_ulasim/pages/searchPage.dart';
+import 'package:kayseri_ulasim/pages/search_page.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
