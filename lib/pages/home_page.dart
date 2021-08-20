@@ -9,7 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/main.dart';
 import 'package:kayseri_ulasim/map/mapGoogle.dart';
-import 'package:kayseri_ulasim/pages/busStop.dart';
+import 'package:kayseri_ulasim/pages/bus_stop.dart';
 import 'package:kayseri_ulasim/pages/searchPage.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -142,7 +142,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Search Button
                 child: TextFormField(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SearchPage()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => SearchPage()));
                   },
                   maxLengthEnforcement: MaxLengthEnforcement.enforced,
                   cursorColor: Colors.blueGrey,

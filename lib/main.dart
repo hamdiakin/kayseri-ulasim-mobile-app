@@ -4,11 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:kayseri_ulasim/mainPage.dart';
 import 'package:kayseri_ulasim/pages/searchPage.dart';
 
-
-void main() async{
+void main() async {
   runApp(MyApp());
-
-
 }
 
 class MyApp extends StatelessWidget {
@@ -23,4 +20,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

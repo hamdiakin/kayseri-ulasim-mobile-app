@@ -250,13 +250,14 @@ class _BusStopPageState extends State<BusStopPage> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         ListTile(
-                                         onTap: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              LineDetail("${aprLinesData[index]["line"]["name"]}","${aprLinesData[index]["line"]["code"]}" )));
-                                                },
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => LineDetail(
+                                                        "${aprLinesData[index]["line"]["name"]}",
+                                                        "${aprLinesData[index]["line"]["code"]}")));
+                                          },
                                           leading: widget.busStopCode.length > 5
                                               ? Icon(
                                                   Icons.tram,
@@ -301,14 +302,20 @@ class _BusStopPageState extends State<BusStopPage> {
                                                                         : aprLinesData[index]["line"]
                                                                             [
                                                                             "name"],
-                                                                    busLineCode:
-                                                                        selectionState == true ? busLinesData[_selectedIndexList1[index]]
+                                                                    busLineCode: selectionState ==
+                                                                            true
+                                                                        ? busLinesData[_selectedIndexList1[index]]
                                                                             [
-                                                                            "code"] : aprLinesData[index]["line"]
+                                                                            "code"]
+                                                                        : aprLinesData[index]["line"]
                                                                             [
                                                                             "code"],
                                                                     busStopCode:
-                                                                        widget.busStopCode,
+                                                                        widget
+                                                                            .busStopCode,
+                                                                    busStopName:
+                                                                        widget
+                                                                            .busStopName,
                                                                   )));
                                                 },
                                                 icon: Icon(
