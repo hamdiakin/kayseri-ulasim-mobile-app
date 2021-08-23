@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/main.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
@@ -26,7 +25,7 @@ class _MyHomePageState extends State<MyHomePage> {
   // Favorites
   // This function gets data from local database
   List<Map<String, dynamic>> favorites;
-  var favDB;
+  var favDB = [];
   Future getFavorites() async {
     this.favorites = await DatabaseHelper.instance.queryAllRows();
     setState(() {
@@ -46,23 +45,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method for retrieving the current location
-  GoogleMapController mapController;
-  Position _currentPosition;
+  Position _currentPosition = new Position(longitude: 0, latitude: 0, timestamp: DateTime.now() , accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
 
   _getUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) async {
       setState(() {
         _currentPosition = position;
-        print('CURRENT POS: $_currentPosition');
-        mapController.animateCamera(
-          CameraUpdate.newCameraPosition(
-            CameraPosition(
-              target: LatLng(position.latitude, position.longitude),
-              zoom: 18.0,
-            ),
-          ),
-        );
       });
     }).catchError((e) {
       print(e);
@@ -178,18 +167,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 flex: 1,
                 child: RefreshIndicator(
                   onRefresh: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (a, b, c) => MyApp(),
-                        transitionDuration: Duration(milliseconds: 5),
-                      ),
-                    );
+                    getFavorites();
                     CircularProgressIndicator();
                     return Future.value(true);
                   },
                   child: new ListView.builder(
-                    itemCount: favLength,
+                    itemCount: favDB.length == 0 ? 0 : favLength,
                     itemBuilder: (BuildContext context, int index) {
                       return Column(
                         children: [
@@ -242,13 +225,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 flex: favLength == 0 ? 4 : 2,
                 child: RefreshIndicator(
                   onRefresh: () {
-                    Navigator.pushReplacement(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (a, b, c) => MyApp(),
-                        transitionDuration: Duration(milliseconds: 5),
-                      ),
-                    );
+                    getData();
                     CircularProgressIndicator();
                     return Future.value(true);
                   },
