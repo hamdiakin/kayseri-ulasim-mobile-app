@@ -5,6 +5,7 @@ import 'package:kayseri_ulasim/pages/home_page.dart';
 
 void main() async {
   runApp(MyApp());
+   await AndroidAlarmManager.initialize(); //initialize alarm_managera
 }
 
 class MyApp extends StatelessWidget {

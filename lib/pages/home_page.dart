@@ -5,8 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/alarm/get_notf.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
-import 'package:kayseri_ulasim/main.dart';
+import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 import 'package:kayseri_ulasim/pages/search_page.dart';
@@ -21,9 +22,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController searchControl = TextEditingController();
+    // This function gets alarm data from local database
+  List<Map<String, dynamic>> alarms;
+  var alarmDB;
+  Future getAlarms() async {
+    this.alarms = await DatabaseHelperAlarm.instance.queryAllRows();
+    setState(() {
+      alarmDB = alarms.toList();
+    });
+  }
+
+  //get length of alarms
+  int alarmLength = 0;
+  getNumberOfAlarms() async {
+    var x = await DatabaseHelperAlarm.instance.queryRowCount();
+    print(x);
+    alarmLength = x;
+  }
 
   // Favorites
-  // This function gets data from local database
+  // This function gets fav data from local database
   List<Map<String, dynamic>> favorites;
   var favDB = [];
   Future getFavorites() async {
@@ -82,6 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
     getData();
     getNumber();
     getFavorites();
+    getNumberOfAlarms();
+    getAlarms();
   }
 
   Widget build(BuildContext context) {
@@ -113,7 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           Icons.add_alert_sharp,
                           color: Colors.white,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>GetNotf()));
+                        },
                       )
                     ],
                   ),
