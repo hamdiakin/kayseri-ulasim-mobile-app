@@ -2,6 +2,7 @@ import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kayseri_ulasim/pages/home_page.dart';
+import 'package:kayseri_ulasim/qr/qr_page.dart';
 
 void main() async {
   runApp(MyApp());

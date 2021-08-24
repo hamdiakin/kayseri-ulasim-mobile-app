@@ -2,6 +2,7 @@
     package="com.example.kayseri_ulasim">
      <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.CAMERA" />
    <application
         android:label="kayseri_ulasim"
         android:icon="@mipmap/ic_launcher">

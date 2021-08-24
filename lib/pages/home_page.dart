@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:barcode_scan_fix/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,6 +12,7 @@ import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 import 'package:kayseri_ulasim/pages/search_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -21,6 +23,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+    String barcode = "";
   TextEditingController searchControl = TextEditingController();
     // This function gets alarm data from local database
   List<Map<String, dynamic>> alarms;
@@ -166,6 +169,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       icon: Icon(Icons.search),
                       color: Colors.white,
                     ),
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        scan();
+                      },
+                      icon: Icon(Icons.qr_code),
+                      color: Colors.white,),
                     hintStyle: TextStyle(
                       fontFamily: "Ubuntu",
                       fontSize: 17,
@@ -347,31 +356,46 @@ class _MyHomePageState extends State<MyHomePage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.map,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => mapGoogle(),
-                                ));
-                          },
-                        ),
+                        Container(
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.map,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => mapGoogle(),
+                                        ));
+                                  },
+                                ),
+                                
                         Text(
-                          "Harita",
-                          style: TextStyle(color: Colors.white),
+                            "Harita",
+                            style: TextStyle(color: Colors.white),
                         ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        
+                       
+
                       ],
                     ),
+                    
                   ],
                 ),
               ),
             ],
           ),
         ),
+
       ),
     );
   }
@@ -384,4 +408,33 @@ class _MyHomePageState extends State<MyHomePage> {
       return Colors.white;
     }
   }
+
+    Future scan() async {
+    try {
+      String barcode = await BarcodeScanner.scan();
+      setState(() {
+        this.barcode = barcode;
+        print(this.barcode);
+
+        _launchURL(barcode);
+      });
+    } on PlatformException catch (e) {
+      if (e.code == BarcodeScanner.CameraAccessDenied) {
+        setState(() {
+          this.barcode = 'The user did not grant the camera permission!';
+        });
+      } else {
+        setState(() => this.barcode = 'Unknown error: $e');
+      }
+    } on FormatException {
+      setState(() => this.barcode =
+          'null (User returned using the "back"-button before scanning anything. Result)');
+    } catch (e) {
+      setState(() => this.barcode = 'Unknown error: $e');
+    }
+  }
+
+  void _launchURL(_url) async => await canLaunch(_url)
+      ? await launch(_url)
+      : throw 'Could not launch $_url';
 }
