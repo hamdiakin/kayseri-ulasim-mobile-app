@@ -11,10 +11,10 @@ class ContactUs extends StatelessWidget {
         title: Text("Contact Us"),
       ),
       body: Center(
-        child: Expanded(
+        child: SingleChildScrollView(
           child: Column(
             children: [
-              Image.asset('assets/contactUs.png', fit: BoxFit.cover, height: MediaQuery.of(context).size.height*(6/21)),
+              Image.asset('assets/contactUs.png', fit: BoxFit.fill, height: MediaQuery.of(context).size.height*(6/21), ),
               Container(
                 child: Text("Kayseri Ulaşım A.Ş. Genel Müdürlüğü", style: TextStyle(fontWeight: FontWeight.bold),),
               ),
@@ -70,7 +70,7 @@ class ContactUs extends StatelessWidget {
               ),
               Divider(),
               SizedBox(
-                height: MediaQuery.of(context).size.height*(1/23),
+                height: MediaQuery.of(context).size.height*(3/23),
                 child: ListTile(
                   leading: Icon(Icons.center_focus_strong_rounded),
                   title: Text("UlasimKayseri"),

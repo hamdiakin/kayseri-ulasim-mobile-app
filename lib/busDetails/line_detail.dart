@@ -4,15 +4,14 @@ import 'package:http/http.dart' as http;
 import 'line_information.dart';
 import 'line_timings.dart';
 
-
 class LineDetail extends StatefulWidget {
   final String busStopName; //get from other page to see the details
   final String busCode; // get code for line_information.dart page
-  const LineDetail(this.busStopName,this.busCode);
+  const LineDetail(this.busStopName, this.busCode);
 
   @override
   _LineDetailState createState() =>
-      _LineDetailState(busStopName: this.busStopName, busCode:this.busCode);
+      _LineDetailState(busStopName: this.busStopName, busCode: this.busCode);
 }
 
 class _LineDetailState extends State<LineDetail> {
@@ -22,11 +21,12 @@ class _LineDetailState extends State<LineDetail> {
 
   Color _colorContainer = Colors.white;
 
-
-  String direction = "DEPARTURE"; // to change the direction when pressed the icons
+  String direction =
+      "DEPARTURE"; // to change the direction when pressed the icons
 
   List lineDetail;
-  Future<List<dynamic>> getBusLine() async {  //get data
+  Future<List<dynamic>> getBusLine() async {
+    //get data
     var response = await http.get(
         Uri.parse(
             "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=$direction"),
@@ -39,45 +39,45 @@ class _LineDetailState extends State<LineDetail> {
 
   @override
   void initState() {
- getBusLine(); //make sure the data is taken before launching
+    getBusLine(); //make sure the data is taken before launching
     // TODO: implement initState
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar
-        (
+      appBar: AppBar(
         backgroundColor: Colors.blueGrey.shade900,
-        title: Text("$busStopName"),// the name of bus got from busStop page
+        title: Text("$busStopName"), // the name of bus got from busStop page
       ),
       body: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Container(
-
                 height: (MediaQuery.of(context).size.height) * 3.52 / 20,
                 width: (MediaQuery.of(context).size.height) * 3.52 / 20,
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black38),
-                  color: _colorContainer, //determine which color will be given on clicked
+                  color:
+                      _colorContainer, //determine which color will be given on clicked
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     InkWell(
                       onTap: () {
-
                         setState(() {
-                          _colorContainer =Colors.black12; //when clicked change the color
+                          _colorContainer =
+                              Colors.black12; //when clicked change the color
                         });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LineDetail(busStopName,busCode)));// push the paramaters
+                                builder: (context) => LineDetail(busStopName,
+                                    busCode))); // push the paramaters
                       },
                       child: Container(
                           child: Column(
@@ -111,32 +111,34 @@ class _LineDetailState extends State<LineDetail> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          _colorContainer=Colors.black12;
+                          _colorContainer = Colors.black12;
                         });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LineInformation(busCode)));
+                                builder: (context) =>
+                                    LineInformation(busCode)));
                       },
                       child: Container(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.black12,
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              Text("Line Information"),
-                            ],
-                          )),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: Colors.black12,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          Text("Line Information"),
+                        ],
+                      )),
                     ),
                   ],
                 ),
-              ), Container(
+              ),
+              Container(
                 height: (MediaQuery.of(context).size.height) * 3.52 / 20,
                 width: (MediaQuery.of(context).size.height) * 3.52 / 20,
                 decoration: BoxDecoration(
@@ -149,33 +151,37 @@ class _LineDetailState extends State<LineDetail> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          _colorContainer= Colors.black12;
+                          _colorContainer = Colors.black12;
                         });
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LineTimings(busStopName, busCode, lineDetail[0]["stop"]["name"],  lineDetail[lineDetail.length-1]["stop"]["name"])));//send the required parameters to linetimings page
+                                builder: (context) => LineTimings(
+                                    busStopName,
+                                    busCode,
+                                    lineDetail[0]["stop"]["name"],
+                                    lineDetail[lineDetail.length - 1]["stop"][
+                                        "name"]))); //send the required parameters to linetimings page
                       },
                       child: Container(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.calendar_today_rounded,
-                                color: Colors.black12,
-                              ),
-                              SizedBox(
-                                height: 10.0,
-                              ),
-                              Text("Line Timings"),
-                            ],
-                          )),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.calendar_today_rounded,
+                            color: Colors.black12,
+                          ),
+                          SizedBox(
+                            height: 10.0,
+                          ),
+                          Text("Line Timings"),
+                        ],
+                      )),
                     ),
                   ],
                 ),
               ),
-
             ],
           ),
           Column(
@@ -193,52 +199,57 @@ class _LineDetailState extends State<LineDetail> {
                       child: Container(
                         width: (MediaQuery.of(context).size.width) * 12 / 20,
                         child: Text(
-                        "$busStopName Direction",
+                          "$busStopName Direction",
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15.0),
+                              fontWeight: FontWeight.bold, fontSize: 15.0),
                           maxLines: 1,
                         ),
                       ),
                     ),
                     Padding(
-
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         height: (MediaQuery.of(context).size.height) * 4 / 20,
                         width: (MediaQuery.of(context).size.width) * 5.3 / 20,
                         color: Colors.black38,
                         child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                              icon: Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 28.0,
-                                color: direction=="DEPARTURE"?
-                                Colors.blue
-                                : Colors.white,
+                            Expanded(
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.arrow_forward_rounded,
+                                  size: 28.0,
+                                  color: direction == "DEPARTURE"
+                                      ? Colors.blue
+                                      : Colors.white,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    direction =
+                                        "DEPARTURE"; //set the direction when presssed
+                                  });
+                                  getBusLine();
+                                },
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  direction = "DEPARTURE"; //set the direction when presssed
-                                });
-                                getBusLine();
-                              },
                             ),
-                            IconButton(
-                              icon: Icon(
-                                Icons.arrow_back,
-                                size: 28.0,
-                                color: direction=="DEPARTURE"?
-                                Colors.white
-                                : Colors.blue,
+                            Expanded(
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.arrow_back,
+                                  size: 28.0,
+                                  color: direction == "DEPARTURE"
+                                      ? Colors.white
+                                      : Colors.blue,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    direction =
+                                        "ARRIVAL"; //change the listView vice versa when clicked
+                                  });
+                                  getBusLine();
+                                },
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  direction = "ARRIVAL"; //change the listView vice versa when clicked
-                                });
-                                getBusLine();
-                              },
                             ),
                           ],
                         ),
@@ -247,12 +258,11 @@ class _LineDetailState extends State<LineDetail> {
                   ],
                 ),
               ),
-              // Text("SOME HASH KEY HERE"),
             ],
           ),
           Expanded(
             flex: 3,
-            child: lineDetail == null// check if data available
+            child: lineDetail == null // check if data available
                 ? Center(
                     child: CircularProgressIndicator(),
                   )
@@ -262,7 +272,7 @@ class _LineDetailState extends State<LineDetail> {
                       return Column(
                         children: [
                           Card(
-                            elevation: 10,
+                            elevation: 3,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.only(
                                   bottomRight: Radius.circular(10),
@@ -277,7 +287,8 @@ class _LineDetailState extends State<LineDetail> {
                                   // This part of the code decides whether the tram icon or the bus icon should be used
                                   leading: Icon(Icons.directions_bus),
                                   title: Text(
-                                    lineDetail[index]["stop"]["name"], //show the stops that a bus passes from
+                                    lineDetail[index]["stop"][
+                                        "name"], //show the stops that a bus passes from
                                     maxLines: 1,
                                   ),
                                 ),
@@ -285,7 +296,7 @@ class _LineDetailState extends State<LineDetail> {
                             ),
                           ),
                           SizedBox(
-                            height: 7.23,
+                            height: 4.23,
                           ),
                         ],
                       );

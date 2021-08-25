@@ -198,6 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 flex: 1,
                 child: RefreshIndicator(
                   onRefresh: () {
+                    getNumber();
                     getFavorites();
                     CircularProgressIndicator();
                     return Future.value(true);

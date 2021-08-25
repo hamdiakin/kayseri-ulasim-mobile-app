@@ -262,7 +262,7 @@ class _LineTimingsState extends State<LineTimings> {
                                                 color: Colors.black)),
                                         alignment: Alignment.center,
                                         child: decidedStation == true
-                                            ? snapshot.data[index]
+                                            ? (snapshot.data[index]
                                                             ["direction"] ==
                                                         "DEPARTURE" &&
                                                     snapshot.data[index]
@@ -285,7 +285,7 @@ class _LineTimingsState extends State<LineTimings> {
                                                 : SizedBox(
                                                     height: 0.0,
                                                     width: 0.0,
-                                                  )
+                                                  ))
                                             : decidedStation == false
                                                 ? snapshot.data[index]
                                                                 ["direction"] ==
