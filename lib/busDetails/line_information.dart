@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
+import 'package:kayseri_ulasim/pages/search_page.dart';
 
 class LineInformation extends StatefulWidget {
   final String busCode; //get the code to see the line of the markers
@@ -85,10 +86,10 @@ class _LineInformationState extends State<LineInformation> {
     await getBusLine();
     for (var i = 0; i < lineInfo.length; i++) {
       locations.add(Location(
-        lineInfo[i]["stop"]["latitude"],
-        lineInfo[i]["stop"]["longitude"],
-        lineInfo[i]["stop"]["name"],
-      ));
+          lineInfo[i]["stop"]["latitude"],
+          lineInfo[i]["stop"]["longitude"],
+          lineInfo[i]["stop"]["name"],
+          lineInfo[i]["stop"]["code"]));
     }
   }
 
@@ -101,11 +102,15 @@ class _LineInformationState extends State<LineInformation> {
   void addMarkers() {
     int index = 0;
     locations.forEach((element) {
-      final KMarker marker = KMarker(element.name, pinLocationIcon,
-          id: MarkerId(index.toString()),
-          lat: element.lat,
-          lng: element.long,
-          onTap: null);
+      final KMarker marker = KMarker(
+        element.name,
+        "",
+        pinLocationIcon,
+        context,
+        id: MarkerId(index.toString()),
+        lat: element.lat,
+        lng: element.long,
+      );
       markersList.add(marker);
       index++;
     });
@@ -116,8 +121,8 @@ class _LineInformationState extends State<LineInformation> {
   void initState() {
     super.initState();
     //creating markers
-    BitmapDescriptor.fromAssetImage(ImageConfiguration(devicePixelRatio: 2.5),
-            'assets/marker.png')
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(devicePixelRatio: 2.5), 'assets/marker.png')
         .then((onValue) {
       pinLocationIcon = onValue;
     });
@@ -126,27 +131,26 @@ class _LineInformationState extends State<LineInformation> {
   }
 
   Widget build(BuildContext context) {
-    return  Scaffold(
-        appBar: AppBar(
-          title: Text('Maps Sample'),
-          backgroundColor: Colors.blueGrey.shade900,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Maps Sample'),
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
+      body: Stack(children: <Widget>[
+        GoogleMap(
+          onCameraMove: (CameraPosition position) {
+            getBusLine();
+            addToList();
+            // To update the markerList
+            setState(() {
+              addMarkers();
+            });
+          },
+          onMapCreated: _onMapCreated,
+          markers: markersList,
+          initialCameraPosition: _initialLocation,
         ),
-        body: Stack(children: <Widget>[
-          GoogleMap(
-            onCameraMove: (CameraPosition position) {
-              getBusLine();
-              addToList();
-              // To update the markerList
-              setState(() {
-                addMarkers();
-              });
-            },
-            onMapCreated: _onMapCreated,
-            markers: markersList,
-            initialCameraPosition: _initialLocation,
-          ),
-        ]),
-      );
-    
+      ]),
+    );
   }
 }

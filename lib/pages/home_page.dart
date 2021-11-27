@@ -23,9 +23,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-    String barcode = "";
+  String barcode = "";
   TextEditingController searchControl = TextEditingController();
-    // This function gets alarm data from local database
+  // This function gets alarm data from local database
   List<Map<String, dynamic>> alarms;
   var alarmDB;
   Future getAlarms() async {
@@ -66,7 +66,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   // Method for retrieving the current location
-  Position _currentPosition = new Position(longitude: 0, latitude: 0, timestamp: DateTime.now() , accuracy: 0, altitude: 0, heading: 0, speed: 0, speedAccuracy: 0);
+  Position _currentPosition = new Position(
+      longitude: 0,
+      latitude: 0,
+      timestamp: DateTime.now(),
+      accuracy: 0,
+      altitude: 0,
+      heading: 0,
+      speed: 0,
+      speedAccuracy: 0);
 
   _getUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
@@ -137,7 +145,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.white,
                         ),
                         onPressed: () {
-                           Navigator.push(context, MaterialPageRoute(builder: (context)=>GetNotf()));
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GetNotf()));
                         },
                       )
                     ],
@@ -174,7 +185,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         scan();
                       },
                       icon: Icon(Icons.qr_code),
-                      color: Colors.white,),
+                      color: Colors.white,
+                    ),
                     hintStyle: TextStyle(
                       fontFamily: "Ubuntu",
                       fontSize: 17,
@@ -375,28 +387,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                         ));
                                   },
                                 ),
-                                
-                        Text(
-                            "Harita",
-                            style: TextStyle(color: Colors.white),
-                        ),
+                                Text(
+                                  "Harita",
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ],
                             ),
                           ),
                         ),
-                        
-                       
-
                       ],
                     ),
-                    
                   ],
                 ),
               ),
             ],
           ),
         ),
-
       ),
     );
   }
@@ -410,7 +416,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-    Future scan() async {
+  Future scan() async {
     try {
       String barcode = await BarcodeScanner.scan();
       setState(() {

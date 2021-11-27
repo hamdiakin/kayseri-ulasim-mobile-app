@@ -18,6 +18,8 @@ class _mapGoogleState extends State<mapGoogle> {
   GoogleMapController mapController;
   Position _currentPosition;
 
+  var Get;
+
   // Method for retrieving the current location
   _getUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
@@ -93,11 +95,8 @@ class _mapGoogleState extends State<mapGoogle> {
   addToList() async {
     await getData();
     for (var i = 0; i < data.length; i++) {
-      locations.add(Location(
-        data[i]["latitude"],
-        data[i]["longitude"],
-        data[i]["name"],
-      ));
+      locations.add(Location(data[i]["latitude"], data[i]["longitude"],
+          data[i]["name"], data[i]["code"]));
     }
   }
 
@@ -105,11 +104,8 @@ class _mapGoogleState extends State<mapGoogle> {
   // Adding location information of the bus stops into the list
   addToList1() async {
     for (var i = 0; i < data1.length; i++) {
-      locations1.add(Location(
-        data1[i]["latitude"],
-        data1[i]["longitude"],
-        data1[i]["name"],
-      ));
+      locations1.add(Location(data1[i]["latitude"], data1[i]["longitude"],
+          data1[i]["name"], data1[i]["code"]));
     }
   }
 
@@ -122,11 +118,15 @@ class _mapGoogleState extends State<mapGoogle> {
   void addMarkers() {
     int index = 0;
     locations.forEach((element) {
-      final KMarker marker = KMarker(element.name, pinLocationIcon,
-          id: MarkerId(index.toString()),
-          lat: element.lat,
-          lng: element.long,
-          onTap: null);
+      final KMarker marker = KMarker(
+        element.name,
+        element.code,
+        pinLocationIcon,
+        context,
+        id: MarkerId(index.toString()),
+        lat: element.lat,
+        lng: element.long,
+      );
       markersList.add(marker);
       index++;
     });
@@ -135,11 +135,15 @@ class _mapGoogleState extends State<mapGoogle> {
   void addMarkers1() {
     int index = 0;
     locations1.forEach((element) {
-      final KMarker marker = KMarker(element.name, pinLocationIcon,
-          id: MarkerId(index.toString()),
-          lat: element.lat,
-          lng: element.long,
-          onTap: null);
+      final KMarker marker = KMarker(
+        element.name,
+        element.code,
+        pinLocationIcon,
+        context,
+        id: MarkerId(index.toString()),
+        lat: element.lat,
+        lng: element.long,
+      );
       markersList.add(marker);
       index++;
     });
