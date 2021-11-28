@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
+import 'package:kayseri_ulasim/busDetails/line_timings.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/pages/line_stop_times.dart';
 
@@ -251,12 +252,32 @@ class _BusStopPageState extends State<BusStopPage> {
                                       children: <Widget>[
                                         ListTile(
                                           onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => LineDetail(
-                                                        "${aprLinesData[index]["line"]["name"]}",
-                                                        "${aprLinesData[index]["line"]["code"]}")));
+                                            selectionState == true
+                                                ? Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            StopTimes(
+                                                              busName: busLinesData[
+                                                                      _selectedIndexList1[
+                                                                          index]]
+                                                                  ["name"],
+                                                              busLineCode: busLinesData[
+                                                                      _selectedIndexList1[
+                                                                          index]]
+                                                                  ["code"],
+                                                              busStopCode: widget
+                                                                  .busStopCode,
+                                                              busStopName: widget
+                                                                  .busStopName,
+                                                            )))
+                                                : Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            LineDetail(
+                                                                "${aprLinesData[index]["line"]["name"]}",
+                                                                "${aprLinesData[index]["line"]["code"]}")));
                                           },
                                           leading: widget.busStopCode.length > 5
                                               ? Icon(
