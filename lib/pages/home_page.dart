@@ -7,12 +7,14 @@ import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/alarm/get_notf.dart';
+import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 import 'package:kayseri_ulasim/pages/search_page.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter/services.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -117,290 +119,295 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        drawer: NavigationDrawer(),
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(75.0),
-          child: AppBar(
-            centerTitle: true,
-            backgroundColor: Colors.blueGrey.shade900,
-            elevation: 10,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                new Spacer(),
-                Image.asset(
-                  'assets/transparent.png',
-                  fit: BoxFit.fitHeight,
-                  height: 150,
-                ),
-                new Spacer(),
-                Container(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.add_alert_sharp,
-                          color: Colors.white,
-                        ),
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => GetNotf()));
-                        },
-                      )
-                    ],
+      home: GestureDetector(
+        onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+        child: Scaffold(
+          drawer: NavigationDrawer(),
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(75.0),
+            child: AppBar(
+              centerTitle: true,
+              backgroundColor: Colors.blueGrey.shade900,
+              elevation: 10,
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  new Spacer(),
+                  Image.asset(
+                    'assets/transparent.png',
+                    fit: BoxFit.fitHeight,
+                    height: 150,
                   ),
-                ),
-              ],
+                  new Spacer(),
+                  Container(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.add_alert_sharp,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            /* Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => GetNotf())); */
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              Container(
-                color: Colors.blueGrey.shade900,
-                height: 70,
-                // Search Button
-                child: TextFormField(
+          body: Center(
+            child: Column(
+              children: [
+                GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SearchPage()));
+                    showSearch(context: context, delegate: DataSearch());
                   },
-                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                  cursorColor: Colors.blueGrey,
-                  controller: searchControl,
-                  keyboardType: TextInputType.name,
-                  decoration: InputDecoration(
-                    prefixIcon: IconButton(
-                      onPressed: () {},
-                      icon: Icon(Icons.search),
-                      color: Colors.white,
-                    ),
-                    suffixIcon: IconButton(
-                      onPressed: () {
-                        scan();
-                      },
-                      icon: Icon(Icons.qr_code),
-                      color: Colors.white,
-                    ),
-                    hintStyle: TextStyle(
-                      fontFamily: "Ubuntu",
-                      fontSize: 17,
-                      color: Colors.white,
-                    ),
-                    hintText: "Hat / Durak Arama",
-                    contentPadding: new EdgeInsets.symmetric(
-                        vertical: 10.0, horizontal: 10.0),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(25.0),
-                      borderSide: BorderSide(
-                        color: Colors.white,
-                        width: 2.0,
+                  child: Container(
+                    color: Colors.blueGrey.shade900,
+                    child: Container(
+                      height: 55,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2.0, color: Colors.white),
+                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                      ),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.search),
+                            color: Colors.white,
+                          ),
+                          Text(
+                            "Line / Stop Search",
+                            style: TextStyle(
+                              fontFamily: "Ubuntu",
+                              fontSize: 17,
+                              color: Colors.white,
+                            ),
+                          ),
+                          new Spacer(),
+                          IconButton(
+                            onPressed: () {
+                              scan();
+                            },
+                            icon: Icon(Icons.qr_code),
+                            color: Colors.white,
+                          ),
+                        ],
                       ),
                     ),
                   ),
                 ),
-              ),
-              Text("Favorites"),
-              Expanded(
-                flex: 1,
-                child: RefreshIndicator(
-                  onRefresh: () {
-                    getNumber();
-                    getFavorites();
-                    CircularProgressIndicator();
-                    return Future.value(true);
-                  },
-                  child: new ListView.builder(
-                    itemCount: favDB.length == 0 ? 0 : favLength,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Column(
+                Container(
+                  height: 15,
+                  color: Colors.blueGrey.shade900,
+                ),
+
+                Text("Favorites"),
+                Expanded(
+                  flex: 1,
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      getNumber();
+                      getFavorites();
+                      CircularProgressIndicator();
+                      return Future.value(true);
+                    },
+                    child: new ListView.builder(
+                      itemCount: favDB.length == 0 ? 0 : favLength,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Column(
+                          children: [
+                            Container(
+                              child: Card(
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.circular(10),
+                                      topRight: Radius.circular(10)),
+                                ),
+                                color: getColor(index),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    BusStopPage(
+                                                      busStopCode: favDB[index]
+                                                          ["code"],
+                                                      busStopName: favDB[index]
+                                                          ["name"],
+                                                    )));
+                                      },
+                                      leading: favDB[index]["code"].length > 5
+                                          ? Icon(Icons.tram, color: Colors.red)
+                                          : Icon(Icons.directions_bus,
+                                              color: Colors.blue),
+                                      title: Text(favDB[index]["name"]),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: (MediaQuery.of(context).size.height) * (1 / 45),
+                ),
+                // Closest bus stops
+                Text("Closest"),
+                Expanded(
+                  flex: favLength == 0 ? 4 : 2,
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      getData();
+                      CircularProgressIndicator();
+                      return Future.value(true);
+                    },
+                    child: data == null
+                        ? Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : new ListView.builder(
+                            itemCount: data == null ? 0 : data.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              getCode() {
+                                if ((data[index]["busStop"]["type"]) ==
+                                    "busStop") {
+                                  code = data[index]["busStop"]["code"];
+                                } else {
+                                  code = "";
+                                }
+                                return code;
+                              }
+
+                              return Column(
+                                children: [
+                                  Container(
+                                    child: Card(
+                                      elevation: 10,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            bottomRight: Radius.circular(10),
+                                            topRight: Radius.circular(10)),
+                                      ),
+                                      color: getColor(index),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          ListTile(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          BusStopPage(
+                                                            busStopName: getCode() +
+                                                                " " +
+                                                                data[index][
+                                                                        "busStop"]
+                                                                    ["name"],
+                                                            busStopCode: data[
+                                                                        index]
+                                                                    ["busStop"]
+                                                                ["code"],
+                                                          )));
+                                            },
+                                            // This part of the code decides whether the tram icon or the bus icon should be used
+                                            leading: Icon(
+                                              getCode() == ""
+                                                  ? Icons.tram
+                                                  : Icons.directions_bus,
+                                              color: getCode() == ""
+                                                  ? Colors.red
+                                                  : Colors.blue.shade700,
+                                            ),
+                                            title: Text(getCode() == ""
+                                                ? data[index]["busStop"]["name"]
+                                                : getCode() +
+                                                    "  " +
+                                                    data[index]["busStop"]
+                                                        ["name"]),
+                                            subtitle: Text(
+                                                (data[index]["distance"] * 1000)
+                                                        .toInt()
+                                                        .toString() +
+                                                    "m"),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 7.23,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                  ),
+                ),
+
+                // Bottom of the page
+                Container(
+                  height: (MediaQuery.of(context).size.height) * (1 / 10),
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.blueGrey.shade900,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            child: Card(
-                              elevation: 10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(10),
-                                    topRight: Radius.circular(10)),
-                              ),
-                              color: getColor(index),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  ListTile(
-                                    onTap: () {
+                            child: Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.map,
+                                      color: Colors.white,
+                                    ),
+                                    onPressed: () {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => BusStopPage(
-                                                    busStopCode: favDB[index]
-                                                        ["code"],
-                                                    busStopName: favDB[index]
-                                                        ["name"],
-                                                  )));
+                                            builder: (context) => mapGoogle(),
+                                          ));
                                     },
-                                    leading: favDB[index]["code"].length > 5
-                                        ? Icon(Icons.tram, color: Colors.red)
-                                        : Icon(Icons.directions_bus,
-                                            color: Colors.blue),
-                                    title: Text(favDB[index]["name"]),
+                                  ),
+                                  Text(
+                                    "Harita",
+                                    style: TextStyle(color: Colors.white),
                                   ),
                                 ],
                               ),
                             ),
                           ),
                         ],
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: (MediaQuery.of(context).size.height) * (1 / 45),
-              ),
-              // Closest bus stops
-              Text("Closest"),
-              Expanded(
-                flex: favLength == 0 ? 4 : 2,
-                child: RefreshIndicator(
-                  onRefresh: () {
-                    getData();
-                    CircularProgressIndicator();
-                    return Future.value(true);
-                  },
-                  child: data == null
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : new ListView.builder(
-                          itemCount: data == null ? 0 : data.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            getCode() {
-                              if ((data[index]["busStop"]["type"]) ==
-                                  "busStop") {
-                                code = data[index]["busStop"]["code"];
-                              } else {
-                                code = "";
-                              }
-                              return code;
-                            }
-
-                            return Column(
-                              children: [
-                                Container(
-                                  child: Card(
-                                    elevation: 10,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                          bottomRight: Radius.circular(10),
-                                          topRight: Radius.circular(10)),
-                                    ),
-                                    color: getColor(index),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        ListTile(
-                                          onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        BusStopPage(
-                                                          busStopName: getCode() +
-                                                              " " +
-                                                              data[index][
-                                                                      "busStop"]
-                                                                  ["name"],
-                                                          busStopCode: data[
-                                                                      index]
-                                                                  ["busStop"]
-                                                              ["code"],
-                                                        )));
-                                          },
-                                          // This part of the code decides whether the tram icon or the bus icon should be used
-                                          leading: Icon(
-                                            getCode() == ""
-                                                ? Icons.tram
-                                                : Icons.directions_bus,
-                                            color: getCode() == ""
-                                                ? Colors.red
-                                                : Colors.blue.shade700,
-                                          ),
-                                          title: Text(getCode() == ""
-                                              ? data[index]["busStop"]["name"]
-                                              : getCode() +
-                                                  "  " +
-                                                  data[index]["busStop"]
-                                                      ["name"]),
-                                          subtitle: Text(
-                                              (data[index]["distance"] * 1000)
-                                                      .toInt()
-                                                      .toString() +
-                                                  "m"),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 7.23,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                ),
-              ),
-
-              // Bottom of the page
-              Container(
-                height: (MediaQuery.of(context).size.height) * (1 / 10),
-                width: MediaQuery.of(context).size.width,
-                color: Colors.blueGrey.shade900,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.map,
-                                    color: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => mapGoogle(),
-                                        ));
-                                  },
-                                ),
-                                Text(
-                                  "Harita",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -444,4 +451,185 @@ class _MyHomePageState extends State<MyHomePage> {
   void _launchURL(_url) async => await canLaunch(_url)
       ? await launch(_url)
       : throw 'Could not launch $_url';
+}
+
+// Search Function
+class DataSearch extends SearchDelegate<String> {
+  // Getting the data
+  List data;
+  Future<List> getData(String query) async {
+    var response = await http.get(Uri.parse(
+        "http://kaktusmobile.kayseriulasim.com.tr/api/rest/search/$query"));
+    if (response.statusCode == 200) {
+      this.data = jsonDecode(response.body);
+      return data;
+    }
+  }
+
+  dataToObject(String query) async {
+    await getData(query);
+    if (data.length != null) {
+      searchQuery.clear();
+      for (int i = 0; i < data.length; i++) {
+        searchQuery.add(new BusNStop(
+            data[i]["node"]["name"], data[i]["node"]["code"], data[i]["type"]));
+      }
+    }
+  }
+
+  // Your search query list will be in these lists:
+  List<BusNStop> searchQuery = [];
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    // actions for app bar
+    return [
+      IconButton(
+        onPressed: () {
+          query = "";
+          searchQuery.clear();
+        },
+        icon: Icon(Icons.clear),
+      )
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    // leading icon on the left of the app bar
+    return IconButton(
+        onPressed: () {
+          close(context, null);
+        },
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow,
+          progress: transitionAnimation,
+        ));
+  }
+
+  int dumLength = 0;
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    // show suggestions
+    print(query);
+    getData(query);
+    if (query.length > 0 && query.length != dumLength) {
+      getData(query);
+      dataToObject(query);
+    }
+    dumLength = query.length;
+
+    return query.length <= 1
+        ? (Column(
+            // In case you want to use any kind of image
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Center(child: Text("Wow, such empty!")),
+            ],
+          ))
+        //List goes here
+        : ListView.builder(
+            itemCount: searchQuery.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                child: ListTile(
+                  onTap: () {
+                    if (searchQuery[index].type == "BusStop") {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BusStopPage(
+                                    busStopCode: searchQuery[index].code,
+                                    busStopName: searchQuery[index].name,
+                                  )));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LineDetail(
+                                    searchQuery[index].name,
+                                    searchQuery[index].code,
+                                  )));
+                    }
+                    //Navigator.pop(context);
+                  },
+                  leading: Icon(
+                    searchQuery[index].type == "BusStop"
+                        ? (searchQuery[index].code.length > 5
+                            ? Icons.tram
+                            : Icons.directions_bus)
+                        : searchQuery[index].code.length > 5
+                            ? Icons.tram
+                            : Icons.directions_bus,
+                  ),
+                  title: Text(searchQuery[index].name),
+                ),
+              );
+            });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    // After clicking the search button in your keyboard, iaw when you meant to search
+    getData(query);
+    return ListView.builder(
+        itemCount: searchQuery.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            onTap: () {
+              if (searchQuery[index].type == "BusStop") {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BusStopPage(
+                              busStopCode: searchQuery[index].code,
+                              busStopName: searchQuery[index].name,
+                            )));
+              } else {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LineDetail(
+                              searchQuery[index].name,
+                              searchQuery[index].code,
+                            )));
+              }
+            },
+            leading: Icon(
+              searchQuery[index].type == "BusStop"
+                  ? (searchQuery[index].code.length > 5
+                      ? Icons.tram
+                      : Icons.directions_bus)
+                  : searchQuery[index].code.length > 5
+                      ? Icons.tram
+                      : Icons.directions_bus,
+            ),
+            title: Text(searchQuery[index].name),
+          );
+        });
+  }
+}
+
+class BusNStop {
+  String name;
+  String code;
+  String type;
+  BusNStop(this.name, this.code, this.type);
+}
+
+// For "Custom App Bar"
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final VoidCallback onTap;
+  final AppBar appBar;
+
+  const CustomAppBar({Key key, this.onTap, this.appBar}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(onTap: onTap, child: appBar);
+  }
+
+  @override
+  Size get preferredSize => new Size.fromHeight(kToolbarHeight);
 }

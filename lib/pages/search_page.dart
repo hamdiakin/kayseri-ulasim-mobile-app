@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
+import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
+import 'package:flutter/services.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key key}) : super(key: key);
@@ -32,7 +35,7 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
-      drawer: Drawer(),
+      drawer: NavigationDrawer(),
     );
   }
 }
@@ -98,7 +101,7 @@ class DataSearch extends SearchDelegate<String> {
     // show suggestions
     print(query);
     getData(query);
-    if (query.length > 1 && query.length != dumLength) {
+    if (query.length > 0 && query.length != dumLength) {
       getData(query);
       dataToObject(query);
     }
@@ -112,8 +115,9 @@ class DataSearch extends SearchDelegate<String> {
               Center(child: Text("Wow, such empty!")),
             ],
           ))
+        //List goes here
         : ListView.builder(
-            itemCount: searchQuery.length,
+            itemCount: searchQuery.length + 1,
             itemBuilder: (context, index) {
               return GestureDetector(
                 child: ListTile(
@@ -126,7 +130,15 @@ class DataSearch extends SearchDelegate<String> {
                                     busStopCode: searchQuery[index].code,
                                     busStopName: searchQuery[index].name,
                                   )));
-                    } else {}
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LineDetail(
+                                    searchQuery[index].name,
+                                    searchQuery[index].code,
+                                  )));
+                    }
                   },
                   leading: Icon(
                     searchQuery[index].type == "BusStop"
@@ -148,7 +160,7 @@ class DataSearch extends SearchDelegate<String> {
     // After clicking the search button in your keyboard, iaw when you meant to search
     getData(query);
     return ListView.builder(
-        itemCount: searchQuery.length,
+        itemCount: searchQuery.length + 1,
         itemBuilder: (context, index) {
           return ListTile(
             onTap: () {
