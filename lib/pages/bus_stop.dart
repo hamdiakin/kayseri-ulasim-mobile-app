@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/busDetails/line_timings.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
+import 'package:kayseri_ulasim/pages/home_page.dart';
 import 'package:kayseri_ulasim/pages/line_stop_times.dart';
 
 class BusStopPage extends StatefulWidget {
@@ -18,6 +19,8 @@ class BusStopPage extends StatefulWidget {
 }
 
 class _BusStopPageState extends State<BusStopPage> {
+  // Jam area for update favorites function
+
   // For local database
   final dbHelper = DatabaseHelper.instance;
 
@@ -199,8 +202,8 @@ class _BusStopPageState extends State<BusStopPage> {
                             });
                       }
                       return Text(
-                        "error",
-                        style: TextStyle(color: Colors.grey[200]),
+                        "", // can be written as error
+                        style: TextStyle(color: Colors.white),
                       );
                     },
                   ),

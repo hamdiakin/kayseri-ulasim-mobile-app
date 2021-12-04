@@ -394,7 +394,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     },
                                   ),
                                   Text(
-                                    "Harita",
+                                    "Map",
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],

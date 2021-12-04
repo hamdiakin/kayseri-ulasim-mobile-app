@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/busDetails/line_timings_alternative.dart';
 import 'line_information.dart';
 import 'line_timings.dart';
 
