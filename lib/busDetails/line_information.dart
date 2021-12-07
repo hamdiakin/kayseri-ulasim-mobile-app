@@ -48,7 +48,7 @@ class _LineInformationState extends State<LineInformation> {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: LatLng(position.latitude, position.longitude),
-              zoom: 10.0,
+              zoom: 20.0,
             ),
           ),
         );
@@ -72,12 +72,16 @@ class _LineInformationState extends State<LineInformation> {
               _currentPosition.latitude,
               _currentPosition.longitude,
             ),
+            zoom: 15.0,
           ),
         ),
       );
     });
     // Adding markers to marker list and eventually to the Map
-    addMarkers();
+    // addMarkers();
+    setState(() {
+      addMarkers();
+    });
   }
 
   List<Location> locations = [];
@@ -131,6 +135,9 @@ class _LineInformationState extends State<LineInformation> {
   }
 
   Widget build(BuildContext context) {
+    setState(() {
+      addMarkers();
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text('Maps Sample'),
@@ -138,13 +145,12 @@ class _LineInformationState extends State<LineInformation> {
       ),
       body: Stack(children: <Widget>[
         GoogleMap(
+          myLocationEnabled: true,
+          myLocationButtonEnabled: true,
           onCameraMove: (CameraPosition position) {
             getBusLine();
             addToList();
             // To update the markerList
-            setState(() {
-              addMarkers();
-            });
           },
           onMapCreated: _onMapCreated,
           markers: markersList,

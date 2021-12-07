@@ -57,130 +57,136 @@ class _LineDetailState extends State<LineDetail> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Container(
-                height: (MediaQuery.of(context).size.height) * 3.52 / 20,
-                width: (MediaQuery.of(context).size.height) * 3.52 / 20,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black38),
-                  color:
-                      _colorContainer, //determine which color will be given on clicked
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _colorContainer =
-                              Colors.black12; //when clicked change the color
-                        });
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LineDetail(busStopName,
-                                    busCode))); // push the paramaters
-                      },
-                      child: Container(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.directions_bus_rounded,
-                            color: Colors.blue,
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Text("Line Detail"),
-                        ],
-                      )),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                height: (MediaQuery.of(context).size.height) * 3.52 / 20,
-                width: (MediaQuery.of(context).size.height) * 3.52 / 20,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black38),
-                  color: _colorContainer,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _colorContainer = Colors.black12;
-                        });
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    LineInformation(busCode)));
-                      },
-                      child: Container(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            color: Colors.black12,
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Text("Line Information"),
-                        ],
-                      )),
-                    ),
-                  ],
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.height) * 3.52 / 20,
+                  width: (MediaQuery.of(context).size.height) * 3.52 / 20,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black38),
+                    color:
+                        _colorContainer, //determine which color will be given on clicked
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _colorContainer =
+                                Colors.black12; //when clicked change the color
+                          });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LineDetail(busStopName,
+                                      busCode))); // push the paramaters
+                        },
+                        child: Container(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.directions_bus_rounded,
+                              color: Colors.blue,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text("Line Detail"),
+                          ],
+                        )),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Container(
-                height: (MediaQuery.of(context).size.height) * 3.52 / 20,
-                width: (MediaQuery.of(context).size.height) * 3.52 / 20,
-                decoration: BoxDecoration(
-                  color: _colorContainer,
-                  border: Border.all(color: Colors.black38),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.height) * 3.52 / 20,
+                  width: (MediaQuery.of(context).size.height) * 3.52 / 20,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black38),
+                    color: _colorContainer,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _colorContainer = Colors.black12;
+                          });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      LineInformation(busCode)));
+                        },
+                        child: Container(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: Colors.black12,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text("Line Information"),
+                          ],
+                        )),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        setState(() {
-                          _colorContainer = Colors.black12;
-                        });
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LineTimings(
-                                    busStopName,
-                                    busCode,
-                                    lineDetail[0]["stop"]["name"],
-                                    lineDetail[lineDetail.length - 1]["stop"][
-                                        "name"]))); //send the required parameters to linetimings page
-                      },
-                      child: Container(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.calendar_today_rounded,
-                            color: Colors.black12,
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          Text("Line Timings"),
-                        ],
-                      )),
-                    ),
-                  ],
+              ),
+              Expanded(
+                child: Container(
+                  height: (MediaQuery.of(context).size.height) * 3.52 / 20,
+                  width: (MediaQuery.of(context).size.height) * 3.52 / 20,
+                  decoration: BoxDecoration(
+                    color: _colorContainer,
+                    border: Border.all(color: Colors.black38),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _colorContainer = Colors.black12;
+                          });
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LineTimings(
+                                      busStopName,
+                                      busCode,
+                                      lineDetail[0]["stop"]["name"],
+                                      lineDetail[lineDetail.length - 1]["stop"][
+                                          "name"]))); //send the required parameters to linetimings page
+                        },
+                        child: Container(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              color: Colors.black12,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            Text("Line Timings"),
+                          ],
+                        )),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],
