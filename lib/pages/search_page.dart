@@ -172,7 +172,15 @@ class DataSearch extends SearchDelegate<String> {
                               busStopCode: searchQuery[index].code,
                               busStopName: searchQuery[index].name,
                             )));
-              } else {}
+              } else {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LineDetail(
+                              searchQuery[index].name,
+                              searchQuery[index].code,
+                            )));
+              }
             },
             leading: Icon(
               searchQuery[index].type == "BusStop"

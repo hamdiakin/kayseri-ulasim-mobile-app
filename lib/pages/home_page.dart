@@ -16,6 +16,8 @@ import 'package:kayseri_ulasim/pages/search_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 
+StreamController<int> streamController = StreamController<int>();
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -25,6 +27,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // to control the other page
+  Stream<int> stream = streamController.stream;
+
+  void mySetState(int x) {
+    getFavorites();
+    getNumber();
+  }
+
   String barcode = "";
   TextEditingController searchControl = TextEditingController();
   // This function gets alarm data from local database
@@ -129,6 +139,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    stream.listen((index) {
+      mySetState(index);
+    });
     _getUserLocation();
     getData();
     getNumber();
@@ -229,70 +242,89 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: 15,
                   color: Colors.blueGrey.shade900,
                 ),
-
-                Text("Favorites"),
-                Expanded(
-                  flex: 1,
-                  child: RefreshIndicator(
-                    onRefresh: () {
-                      getNumber();
-                      getFavorites();
-                      CircularProgressIndicator();
-                      return Future.value(true);
-                    },
-                    child: new ListView.builder(
-                      itemCount: favDB.length == 0 ? 0 : favLength,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Column(
-                          children: [
-                            Container(
-                              child: Card(
-                                elevation: 10,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(10),
-                                      topRight: Radius.circular(10)),
-                                ),
-                                color: getColor(index),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    ListTile(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    BusStopPage(
-                                                      busStopCode: favDB[index]
-                                                          ["code"],
-                                                      busStopName: favDB[index]
-                                                          ["name"],
-                                                    )));
-                                      },
-                                      leading: favDB[index]["code"].length > 5
-                                          ? Icon(Icons.tram, color: Colors.red)
-                                          : Icon(Icons.directions_bus,
-                                              color: Colors.blue),
-                                      title: Text(favDB[index]["name"]),
-                                    ),
-                                  ],
-                                ),
+                favLength == 0
+                    ? Container(
+                        height: 25,
+                        color: Colors.blueGrey.shade900,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "No favorites added",
+                                style: TextStyle(color: Colors.white),
                               ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                            ]))
+                    : Text("Favorites"),
+
+                favLength == 0
+                    ? SizedBox(height: 0)
+                    : Expanded(
+                        flex: 1,
+                        child: RefreshIndicator(
+                          onRefresh: () {
+                            mySetState(5);
+                            getNumber();
+                            getFavorites();
+                            CircularProgressIndicator();
+                            return Future.value(true);
+                          },
+                          child: new ListView.builder(
+                            itemCount: favDB.length == 0 ? 0 : favLength,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Column(
+                                children: [
+                                  Container(
+                                    child: Card(
+                                      elevation: 10,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            bottomRight: Radius.circular(10),
+                                            topRight: Radius.circular(10)),
+                                      ),
+                                      color: getColor(index),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          ListTile(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          BusStopPage(
+                                                            busStopCode:
+                                                                favDB[index]
+                                                                    ["code"],
+                                                            busStopName:
+                                                                favDB[index]
+                                                                    ["name"],
+                                                          )));
+                                            },
+                                            leading:
+                                                favDB[index]["code"].length > 5
+                                                    ? Icon(Icons.tram,
+                                                        color: Colors.red)
+                                                    : Icon(Icons.directions_bus,
+                                                        color: Colors.blue),
+                                            title: Text(favDB[index]["name"]),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                 SizedBox(
                   height: (MediaQuery.of(context).size.height) * (1 / 45),
                 ),
                 // Closest bus stops
                 Text("Closest"),
                 Expanded(
-                  flex: favLength == 0 ? 4 : 2,
+                  flex: favLength == 0 ? 11 : 2,
                   child: RefreshIndicator(
                     onRefresh: () {
                       getData();

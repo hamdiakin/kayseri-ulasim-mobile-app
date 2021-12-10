@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kayseri_ulasim/busDetails/line_timings_alternative.dart';
+import 'package:kayseri_ulasim/busDetails/timing_alt.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 import 'line_information.dart';
 import 'line_timings.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LineDetail extends StatefulWidget {
   final String busStopName; //get from other page to see the details
@@ -44,6 +46,9 @@ class _LineDetailState extends State<LineDetail> {
     // TODO: implement initState
     super.initState();
   }
+
+  //For toggle switch
+  int initialIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -201,19 +206,55 @@ class _LineDetailState extends State<LineDetail> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: (MediaQuery.of(context).size.width) * 12 / 20,
-                        child: Text(
-                          "$busStopName Direction",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 15.0),
-                          maxLines: 1,
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          width: (MediaQuery.of(context).size.width) * 12 / 20,
+                          child: Text(
+                            "$busStopName Direction",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 15.0),
+                            maxLines: 1,
+                          ),
                         ),
                       ),
                     ),
                     Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        child: ToggleSwitch(
+                          minWidth: 60.0,
+                          minHeight: 60.0,
+                          cornerRadius: 20.0,
+                          initialLabelIndex: initialIndex,
+                          totalSwitches: 2,
+                          labels: ['', ''],
+                          icons: [
+                            Icons.arrow_back_rounded,
+                            Icons.arrow_forward_rounded,
+                          ],
+                          onToggle: (index) {
+                            setState(() {
+                              initialIndex = index;
+                            });
+                            if (initialIndex == 0) {
+                              setState(() {
+                                direction = "DEPARTURE";
+                              });
+                            } else {
+                              setState(() {
+                                direction = "ARRIVAL";
+                              });
+                            }
+                            getBusLine();
+                            print(index);
+                          },
+                        ),
+                      ),
+                    ),
+
+                    /*      Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Container(
                         height: (MediaQuery.of(context).size.height) * 4 / 20,
@@ -223,6 +264,7 @@ class _LineDetailState extends State<LineDetail> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Expanded(
+                              // Toggle here
                               child: IconButton(
                                 icon: Icon(
                                   Icons.arrow_forward_rounded,
@@ -261,7 +303,7 @@ class _LineDetailState extends State<LineDetail> {
                           ],
                         ),
                       ),
-                    ),
+                    ), */
                   ],
                 ),
               ),

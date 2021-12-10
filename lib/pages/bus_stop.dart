@@ -128,10 +128,14 @@ class _BusStopPageState extends State<BusStopPage> {
                     ),
               onPressed: () {
                 inCheck();
-                if (check)
+                if (check) {
                   dbHelper.delete1(widget.busStopName);
-                else
+                  //streamController.add(5);
+                } else {
                   _insert(widget.busStopName, widget.busStopCode);
+                  streamController.add(5);
+                }
+
                 _query();
                 inCheck();
               },
@@ -377,6 +381,7 @@ class _BusStopPageState extends State<BusStopPage> {
 
   void _insert(String name1, String code2) async {
     // row to insert
+
     Map<String, dynamic> row = {
       DatabaseHelper.columnName: '$name1',
       DatabaseHelper.columnCode: '$code2'
