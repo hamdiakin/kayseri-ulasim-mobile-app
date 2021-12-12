@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'about_kayseri.dart';
 import 'about_kayseri_ulasim.dart';
 import 'announcements.dart';
@@ -13,6 +13,11 @@ class NavigationDrawer extends StatefulWidget {
 }
 
 class _NavigationDrawerState extends State<NavigationDrawer> {
+  String _url = "https://www.kayseriulasim.com/kartbasvurusu";
+  void _launchURL() async {
+    if (!await launch(_url)) throw 'Could not launch $_url';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -24,7 +29,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             icon: Icons.info,
             text: 'Card Application',
             onTap: () {
-              Navigator.push(
+              _launchURL();
+              /* Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => new WebviewScaffold(
@@ -32,14 +38,15 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                             appBar: new AppBar(
                               title: Text("Card Application"),
                             ),
-                          )));
+                          ))); */
             },
           ),
           createDrawerBodyItem(
             icon: Icons.settings,
             text: 'Settings',
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context)=> Settings()));
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => Settings()));
             },
           ),
           createDrawerBodyItem(
@@ -59,38 +66,40 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
             },
           ),
           createDrawerBodyItem(
-            icon: Icons.bus_alert,
-            text: 'About Kayseri Ulaşım',
-            onTap: ()  {
-               Navigator.push(context, MaterialPageRoute(builder: (context)=> AboutKayseriUlasim()));
-            }
-          ),
+              icon: Icons.bus_alert,
+              text: 'About Kayseri Ulaşım',
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => AboutKayseriUlasim()));
+              }),
           createDrawerBodyItem(
-            icon: Icons.history_edu,
-            text: 'About Kayseri',
-            onTap: ()  {
-               Navigator.push(context, MaterialPageRoute(builder: (context)=> AboutKayseri()));
-            }
-          ),
+              icon: Icons.history_edu,
+              text: 'About Kayseri',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => AboutKayseri()));
+              }),
           Divider(),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text("İletişim"),
           ),
           createDrawerBodyItem(
-            icon: Icons.contact_page,
-            text: 'Contact Us',
-            onTap: ()  {
-               Navigator.push(context, MaterialPageRoute(builder: (context)=> ContactUs()));
-            }
-          ),
+              icon: Icons.contact_page,
+              text: 'Contact Us',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ContactUs()));
+              }),
           createDrawerBodyItem(
-            icon: Icons.notifications,
-            text: 'Announcements',
-            onTap: ()  {
-               Navigator.push(context, MaterialPageRoute(builder: (context)=> Announcements()));
-            }
-          ),
+              icon: Icons.notifications,
+              text: 'Announcements',
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => Announcements()));
+              }),
           createDrawerBodyItem(
             icon: Icons.text_fields,
             text: 'Survey',
@@ -138,11 +147,7 @@ Widget createDrawerHeader() {
         SizedBox(
           width: 10,
         ),
-        Image.asset(
-          'assets/kbb.png',
-          fit: BoxFit.fitHeight,
-          height: 100
-        ),
+        Image.asset('assets/kbb.png', fit: BoxFit.fitHeight, height: 100),
         SizedBox(
           width: 20,
         ),

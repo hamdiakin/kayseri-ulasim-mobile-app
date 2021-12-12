@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
-import 'package:kayseri_ulasim/busDetails/line_timings.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/pages/home_page.dart';
 import 'package:kayseri_ulasim/pages/line_stop_times.dart';
@@ -76,12 +75,43 @@ class _BusStopPageState extends State<BusStopPage> {
 
   // This function compares the name of the bus line to the approcahing lines and returns, if there is, the time for a bus to come to the bus stop
   String getTimetoStop(String name) {
+    String dummy = "";
+    for (var i = 0; i < aprLinesData.length; i++) {
+      if (aprLinesData[i]["line"]["name"] == name) {
+        dummy = formatter(aprLinesData[i]["doorNo"]);
+        return dummy;
+      }
+    }
+    return "Please click to see the details of bus lines. ";
+  }
+
+  String formatter(String s) {
+    String leading = "[";
+    String rest = "";
+    int length = s.length;
+
+    int i = 0;
+    while (s[i] != "-") {
+      leading += s[i];
+      i++;
+    }
+
+    leading += "] ";
+
+    for (int j = i + 1; j < length; j++) {
+      rest += s[j];
+    }
+
+    return leading + rest;
+  }
+
+  String getTimetoStop1(String name) {
     for (var i = 0; i < aprLinesData.length; i++) {
       if (aprLinesData[i]["line"]["name"] == name) {
         return aprLinesData[i]["timeToStop"].toString() + " dk";
       }
     }
-    return "Please click to see the details of bus lines. ";
+    return " ";
   }
 
   // To check if exist in the db
@@ -301,55 +331,72 @@ class _BusStopPageState extends State<BusStopPage> {
                                                       index]]["name"]))
                                               : Text(aprLinesData[index]["line"]
                                                   ["name"]),
-                                          subtitle: Text(selectionState == true
-                                              ? getTimetoStop(busLinesData[
-                                                  _selectedIndexList1[
-                                                      index]]["name"])
-                                              : aprLinesData[index]
-                                                          ["timeToStop"]
-                                                      .toString() +
-                                                  " dk"),
-                                          trailing: SizedBox(
-                                            height: 30.0,
-                                            width: 60.0,
-                                            child: IconButton(
-                                                padding:
-                                                    new EdgeInsets.all(0.0),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder:
-                                                              (context) =>
-                                                                  StopTimes(
-                                                                    busName: selectionState ==
-                                                                            true
-                                                                        ? busLinesData[_selectedIndexList1[index]]
-                                                                            [
-                                                                            "name"]
-                                                                        : aprLinesData[index]["line"]
-                                                                            [
-                                                                            "name"],
-                                                                    busLineCode: selectionState ==
-                                                                            true
-                                                                        ? busLinesData[_selectedIndexList1[index]]
-                                                                            [
-                                                                            "code"]
-                                                                        : aprLinesData[index]["line"]
-                                                                            [
-                                                                            "code"],
-                                                                    busStopCode:
-                                                                        widget
-                                                                            .busStopCode,
-                                                                    busStopName:
-                                                                        widget
-                                                                            .busStopName,
-                                                                  )));
-                                                },
-                                                icon: Icon(
-                                                  Icons.access_alarm_outlined,
-                                                  color: Colors.blue.shade700,
-                                                )),
+                                          subtitle: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(selectionState ==
+                                                        true
+                                                    ? getTimetoStop(
+                                                        busLinesData[
+                                                            _selectedIndexList1[
+                                                                index]]["name"])
+                                                    : aprLinesData[index]
+                                                                ["doorNo"]
+                                                            .toString() +
+                                                        " "),
+                                              ),
+                                            ],
+                                          ),
+                                          trailing: Column(
+                                            children: [
+                                              SizedBox(
+                                                height: 30.0,
+                                                width: 60.0,
+                                                child: IconButton(
+                                                    padding:
+                                                        new EdgeInsets.all(0.0),
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      StopTimes(
+                                                                        busName: selectionState ==
+                                                                                true
+                                                                            ? busLinesData[_selectedIndexList1[index]]["name"]
+                                                                            : aprLinesData[index]["line"]["name"],
+                                                                        busLineCode: selectionState ==
+                                                                                true
+                                                                            ? busLinesData[_selectedIndexList1[index]]["code"]
+                                                                            : aprLinesData[index]["line"]["code"],
+                                                                        busStopCode:
+                                                                            widget.busStopCode,
+                                                                        busStopName:
+                                                                            widget.busStopName,
+                                                                      )));
+                                                    },
+                                                    icon: Icon(
+                                                      Icons
+                                                          .access_alarm_outlined,
+                                                      color:
+                                                          Colors.blue.shade700,
+                                                    )),
+                                              ),
+                                              SizedBox(
+                                                height: 2,
+                                              ),
+                                              Text(selectionState == true
+                                                  ? getTimetoStop1(busLinesData[
+                                                      _selectedIndexList1[
+                                                          index]]["name"])
+                                                  : aprLinesData[index]
+                                                              ["timeToStop"]
+                                                          .toString() +
+                                                      " dk"),
+                                            ],
                                           ),
                                         ),
                                       ],
