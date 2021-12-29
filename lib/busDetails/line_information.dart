@@ -76,18 +76,20 @@ class _LineInformationState extends State<LineInformation> {
           ),
         ),
       );
+      getBusLine();
+      addToList();
+      addMarkers();
     });
     // Adding markers to marker list and eventually to the Map
     // addMarkers();
-    setState(() {
+    /* setState(() {
       addMarkers();
-    });
+    }); */
   }
 
   List<Location> locations = [];
   // Adding location information of the bus stops into the list
   addToList() async {
-    await getBusLine();
     for (var i = 0; i < lineInfo.length; i++) {
       locations.add(Location(
           lineInfo[i]["stop"]["latitude"],
@@ -135,9 +137,6 @@ class _LineInformationState extends State<LineInformation> {
   }
 
   Widget build(BuildContext context) {
-    setState(() {
-      addMarkers();
-    });
     return Scaffold(
       appBar: AppBar(
         title: Text('Maps Sample'),
@@ -147,11 +146,8 @@ class _LineInformationState extends State<LineInformation> {
         GoogleMap(
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
-          onCameraMove: (CameraPosition position) {
-            getBusLine();
-            addToList();
-            // To update the markerList
-          },
+          zoomControlsEnabled: false,
+          mapToolbarEnabled: false,
           onMapCreated: _onMapCreated,
           markers: markersList,
           initialCameraPosition: _initialLocation,

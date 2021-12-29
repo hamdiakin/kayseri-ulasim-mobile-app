@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.CAMERA" />
    <application
-        android:label="kayseri_ulasim"
+        android:label="Kayseri Ulaşım"
         android:icon="@mipmap/ic_launcher">
         <!--  Google Maps API key --> 
         <meta-data android:name="com.google.android.geo.API_KEY"

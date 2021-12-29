@@ -131,11 +131,13 @@ class _BusStopPageState extends State<BusStopPage> {
     super.initState();
     busLineData = getBusLines();
     aprLineData = aprBusLines();
-    timer = Timer.periodic(
-        Duration(seconds: 13),
-        (Timer t) => setState(() {
-              aprLineData = aprBusLines();
-            }));
+    if (mounted) {
+      timer = Timer.periodic(
+          Duration(seconds: 13),
+          (Timer t) => setState(() {
+                aprLineData = aprBusLines();
+              }));
+    }
     inCheck();
   }
 
@@ -342,9 +344,9 @@ class _BusStopPageState extends State<BusStopPage> {
                                                         busLinesData[
                                                             _selectedIndexList1[
                                                                 index]]["name"])
-                                                    : aprLinesData[index]
-                                                                ["doorNo"]
-                                                            .toString() +
+                                                    : formatter(
+                                                            aprLinesData[index]
+                                                                ["doorNo"]) +
                                                         " "),
                                               ),
                                             ],

@@ -65,17 +65,23 @@ class _mapGoogleState extends State<mapGoogle> {
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(
-              _currentPosition.latitude,
-              _currentPosition.longitude,
-            ),
+            target: LatLng(38.722690, 35.486939
+                /* _currentPosition.latitude,
+              _currentPosition.longitude, */
+                ),
             zoom: 18.0,
           ),
         ),
       );
     });
     // Adding markers to marker list and eventually to the map
-    addMarkers();
+    /* Future.delayed(const Duration(milliseconds: 250), () {
+      setState(() {
+        addMarkers();
+      });
+    }); */
+
+    //addMarkers();
   }
 
   List data1;
@@ -149,14 +155,21 @@ class _mapGoogleState extends State<mapGoogle> {
     });
   }
 
+  int counter = 3;
   void updateFunction(CameraPosition position) {
-    locations1.clear();
-    markersList.clear();
-    getData1(position.target.latitude, position.target.longitude);
-    addToList1();
-    setState(() {
-      addMarkers1();
-    });
+    if (counter > 0) {
+      locations1.clear();
+      markersList.clear();
+      getData1(position.target.latitude, position.target.longitude);
+      addToList1();
+      setState(() {
+        addMarkers1();
+      });
+      counter = counter - 24;
+    } else {
+      counter++;
+      print("counter has been restted");
+    }
   }
 
   BitmapDescriptor pinLocationIcon;
@@ -184,9 +197,13 @@ class _mapGoogleState extends State<mapGoogle> {
             GoogleMap(
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
+              zoomControlsEnabled: false,
+              mapToolbarEnabled: false,
               minMaxZoomPreference: MinMaxZoomPreference(2, 16),
               onCameraMove: (CameraPosition position) {
-                updateFunction(position);
+                Future.delayed(const Duration(milliseconds: 250), () {
+                  updateFunction(position);
+                });
               },
               onMapCreated: _onMapCreated,
               markers: markersList,
@@ -215,7 +232,7 @@ class _mapGoogleState extends State<mapGoogle> {
                                   _currentPosition.latitude,
                                   _currentPosition.longitude,
                                 ),
-                                zoom: 18.0,
+                                zoom: 17.0,
                               ),
                             ),
                           );

@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
-import 'package:flutter/services.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key key}) : super(key: key);
@@ -35,7 +33,7 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
-      drawer: NavigationDrawer(),
+      drawer: Drawer(),
     );
   }
 }
@@ -49,14 +47,15 @@ class DataSearch extends SearchDelegate<String> {
         "http://kaktusmobile.kayseriulasim.com.tr/api/rest/search/$query"));
     if (response.statusCode == 200) {
       this.data = jsonDecode(response.body);
+
       return data;
     }
   }
 
   dataToObject(String query) async {
-    await getData(query);
+    getData(query);
     if (data.length != null) {
-      searchQuery.clear();
+      //searchQuery.clear();
       for (int i = 0; i < data.length; i++) {
         searchQuery.add(new BusNStop(
             data[i]["node"]["name"], data[i]["node"]["code"], data[i]["type"]));
@@ -66,6 +65,7 @@ class DataSearch extends SearchDelegate<String> {
 
   // Your search query list will be in these lists:
   List<BusNStop> searchQuery = [];
+  List<BusNStop> updated = [];
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -94,18 +94,18 @@ class DataSearch extends SearchDelegate<String> {
         ));
   }
 
-  int dumLength = 0;
-
+  String qh = "";
+  String neuvel = "";
   @override
   Widget buildSuggestions(BuildContext context) {
     // show suggestions
     print(query);
-    getData(query);
-    if (query.length > 0 && query.length != dumLength) {
-      getData(query);
-      dataToObject(query);
+    neuvel = query;
+    if (!(identical(qh, neuvel))) {
+      searchQuery.clear();
     }
-    dumLength = query.length;
+    dataToObject(neuvel);
+    qh = query;
 
     return query.length <= 1
         ? (Column(
@@ -115,9 +115,8 @@ class DataSearch extends SearchDelegate<String> {
               Center(child: Text("Wow, such empty!")),
             ],
           ))
-        //List goes here
         : ListView.builder(
-            itemCount: searchQuery.length + 1,
+            itemCount: searchQuery.length,
             itemBuilder: (context, index) {
               return GestureDetector(
                 child: ListTile(
@@ -158,9 +157,10 @@ class DataSearch extends SearchDelegate<String> {
   @override
   Widget buildResults(BuildContext context) {
     // After clicking the search button in your keyboard, iaw when you meant to search
-    getData(query);
+
+    //getData(query);
     return ListView.builder(
-        itemCount: searchQuery.length + 1,
+        itemCount: searchQuery.length,
         itemBuilder: (context, index) {
           return ListTile(
             onTap: () {
@@ -172,15 +172,7 @@ class DataSearch extends SearchDelegate<String> {
                               busStopCode: searchQuery[index].code,
                               busStopName: searchQuery[index].name,
                             )));
-              } else {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => LineDetail(
-                              searchQuery[index].name,
-                              searchQuery[index].code,
-                            )));
-              }
+              } else {}
             },
             leading: Icon(
               searchQuery[index].type == "BusStop"
