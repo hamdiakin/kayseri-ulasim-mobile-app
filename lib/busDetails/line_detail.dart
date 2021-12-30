@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:kayseri_ulasim/busDetails/timing_alt.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'line_information.dart';
 import 'line_timings.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LineDetail extends StatefulWidget {
   final String busStopName; //get from other page to see the details

@@ -197,7 +197,7 @@ class _mapGoogleState extends State<mapGoogle> {
             GoogleMap(
               myLocationEnabled: true,
               myLocationButtonEnabled: true,
-              zoomControlsEnabled: false,
+              zoomControlsEnabled: true,
               mapToolbarEnabled: false,
               minMaxZoomPreference: MinMaxZoomPreference(2, 16),
               onCameraMove: (CameraPosition position) {

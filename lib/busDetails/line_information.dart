@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
-import 'package:kayseri_ulasim/pages/search_page.dart';
 
 class LineInformation extends StatefulWidget {
   final String busCode; //get the code to see the line of the markers

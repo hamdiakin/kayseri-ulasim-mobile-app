@@ -1,22 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:barcode_scan_fix/barcode_scan.dart';
+//import 'package:barcode_scan_fix/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
-import 'package:kayseri_ulasim/alarm/get_notf.dart';
-import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
-import 'package:kayseri_ulasim/pages/search_page.dart';
 import 'package:kayseri_ulasim/pages/search_page1.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter/services.dart';
-
 StreamController<int> streamController = StreamController<int>();
 
 class MyHomePage extends StatefulWidget {
@@ -231,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           new Spacer(),
                           IconButton(
                             onPressed: () {
-                              scan();
+                              //scan();
                             },
                             icon: Icon(Icons.qr_code),
                             color: Colors.white,
@@ -478,7 +473,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future scan() async {
+  /* Future scan() async {
     try {
       String barcode = await BarcodeScanner.scan();
       setState(() {
@@ -501,7 +496,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       setState(() => this.barcode = 'Unknown error: $e');
     }
-  }
+  } */
 
   void _launchURL(_url) async => await canLaunch(_url)
       ? await launch(_url)

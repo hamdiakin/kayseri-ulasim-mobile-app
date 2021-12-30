@@ -43,5 +43,18 @@
 		<false/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<key>NSAllowsArbitraryLoads</key>
+        <true/>
+        <key>NSAllowsArbitraryLoadsInWebContent</key>
+        <true/>
+		<key>LSApplicationQueriesSchemes</key>
+        <array>
+          <string>https</string>
+          <string>http</string>
+        </array>
+		<key>NSLocationWhenInUseUsageDescription</key>
+        <string>This app needs access to location when open.</string>
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>This app needs access to location when in the background.</string>
 	</dict>
 </plist>
