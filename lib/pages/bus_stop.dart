@@ -146,6 +146,10 @@ class _BusStopPageState extends State<BusStopPage> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          leading: new IconButton(
+              icon: new Icon(Icons.arrow_back_ios_outlined),
+              onPressed: () => Navigator.pop(context)
+            ),
           title: Text(widget.busStopName),
           actions: <Widget>[
             IconButton(

@@ -53,13 +53,7 @@ class _StopTimesState extends State<StopTimes> {
           backgroundColor: Colors.blueGrey.shade900,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => BusStopPage(
-                          busStopCode: widget.busStopCode,
-                          busStopName: widget.busName,
-                        ))),
+            onPressed: () => Navigator.pop(context)
           ),
           title: Text(
             widget.busName,

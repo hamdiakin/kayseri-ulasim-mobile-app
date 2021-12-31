@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
@@ -14,6 +15,20 @@ class mapGoogle extends StatefulWidget {
 }
 
 class _mapGoogleState extends State<mapGoogle> {
+  bool isSend = false;
+  int launched = 1;
+  // for the pop up message
+  void showMessage(String message, int timeInSec) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        timeInSecForIosWeb: timeInSec,
+        backgroundColor: Colors.grey.shade300,
+        textColor: Colors.black87,
+        fontSize: 16.0);
+  }
+
   CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
   GoogleMapController mapController;
   Position _currentPosition;
@@ -65,9 +80,9 @@ class _mapGoogleState extends State<mapGoogle> {
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(38.722690, 35.486939
-                /* _currentPosition.latitude,
-              _currentPosition.longitude, */
+            target: LatLng(/* 38.722690, 35.486939 */
+                _currentPosition.latitude,
+              _currentPosition.longitude, 
                 ),
             zoom: 18.0,
           ),
@@ -89,7 +104,7 @@ class _mapGoogleState extends State<mapGoogle> {
   Future<String> getData1(double lat, double long) async {
     var response = await http.get(
         Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat + 0.009},${long - 0.009},${lat + 0.009},${long + 0.009},${lat - 0.009},${long - 0.009},${lat - 0.009},${long + 0.009}"),
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat + 0.012},${long - 0.012},${lat + 0.012},${long + 0.012},${lat - 0.012},${long - 0.012},${lat - 0.012},${long + 0.012}"),
         headers: {"Accept": "application/json"});
     this.data1 = jsonDecode(response.body);
 
@@ -189,6 +204,10 @@ class _mapGoogleState extends State<mapGoogle> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
+          leading: new IconButton(
+              icon: new Icon(Icons.arrow_back_ios_outlined),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
           title: Text('Maps Sample'),
           backgroundColor: Colors.blueGrey.shade900,
         ),
@@ -199,11 +218,25 @@ class _mapGoogleState extends State<mapGoogle> {
               myLocationButtonEnabled: true,
               zoomControlsEnabled: true,
               mapToolbarEnabled: false,
-              minMaxZoomPreference: MinMaxZoomPreference(2, 16),
+              minMaxZoomPreference: MinMaxZoomPreference(2, 17),
               onCameraMove: (CameraPosition position) {
-                Future.delayed(const Duration(milliseconds: 250), () {
+                print(position.zoom);
+                if (position.zoom < 14) {
+                  setState(() {
+                    markersList.clear();
+                  });
+                  if (markersList.isEmpty && (isSend == false)) {
+                    launched--;
+                    print("launched is: " + launched.toString());
+                    if (launched < 0)
+                      showMessage(
+                          "Please zoom in to be able to see the stops!", 3);
+                    isSend = true;
+                  }
+                } else {
                   updateFunction(position);
-                });
+                  isSend = false;
+                }
               },
               onMapCreated: _onMapCreated,
               markers: markersList,

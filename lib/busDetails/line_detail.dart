@@ -52,6 +52,10 @@ class _LineDetailState extends State<LineDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: new IconButton(
+              icon: new Icon(Icons.arrow_back_ios_outlined),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
         backgroundColor: Colors.blueGrey.shade900,
         title: Text("$busStopName"), // the name of bus got from busStop page
       ),
@@ -74,15 +78,11 @@ class _LineDetailState extends State<LineDetail> {
                     children: [
                       InkWell(
                         onTap: () {
-                          setState(() {
+                          /* setState(() {
                             _colorContainer =
                                 Colors.black12; //when clicked change the color
-                          });
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => LineDetail(busStopName,
-                                      busCode))); // push the paramaters
+                          }); */
+                          
                         },
                         child: Container(
                             child: Column(
