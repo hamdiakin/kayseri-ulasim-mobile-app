@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
+import 'dart:io' show Platform;
 
 class LineInformation extends StatefulWidget {
   final String busCode; //get the code to see the line of the markers
@@ -120,6 +121,7 @@ class _LineInformationState extends State<LineInformation> {
       index++;
     });
   }
+  bool isIOS = Platform.isIOS;
 
   BitmapDescriptor pinLocationIcon;
   @override
@@ -127,7 +129,8 @@ class _LineInformationState extends State<LineInformation> {
     super.initState();
     //creating markers
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(devicePixelRatio: 2.5), 'assets/marker.png')
+            ImageConfiguration(/* devicePixelRatio: 1.5, */ /* size: Size(32, 32) */),
+            isIOS ? 'assets/marker_ios.png' : 'assets/marker.png')
         .then((onValue) {
       pinLocationIcon = onValue;
     });

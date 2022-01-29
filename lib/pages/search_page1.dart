@@ -141,7 +141,21 @@ class _SearchBar extends State {
                           ? Icons.tram
                           : Icons.directions_bus,
                 ),
-                title: Text(suggestion.name),
+                //title: Text(suggestion.name + suggestion.code),
+                title: RichText(
+                    text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.black,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: suggestion.code,
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    TextSpan(text: ' '),
+                    TextSpan(text: suggestion.name),
+                  ],
+                )),
               ),
             ));
       }).toList(),

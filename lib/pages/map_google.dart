@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
+import 'dart:io' show Platform;
 
 class mapGoogle extends StatefulWidget {
   const mapGoogle({Key key}) : super(key: key);
@@ -19,14 +20,17 @@ class _mapGoogleState extends State<mapGoogle> {
   int launched = 1;
   // for the pop up message
   void showMessage(String message, int timeInSec) {
-    Fluttertoast.showToast(
+    setState(() {
+      Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.SNACKBAR,
         timeInSecForIosWeb: timeInSec,
-        backgroundColor: Colors.grey.shade300,
-        textColor: Colors.black87,
-        fontSize: 16.0);
+        backgroundColor: Colors.blueGrey,
+        textColor: Colors.red,
+        fontSize: 45.0);
+    });
+    
   }
 
   CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
@@ -80,10 +84,11 @@ class _mapGoogleState extends State<mapGoogle> {
       mapController.animateCamera(
         CameraUpdate.newCameraPosition(
           CameraPosition(
-            target: LatLng(/* 38.722690, 35.486939 */
-                _currentPosition.latitude,
+            target: LatLng(
+               /* 38.722690, 35.486939   */
+              _currentPosition.latitude,
               _currentPosition.longitude, 
-                ),
+            ),
             zoom: 18.0,
           ),
         ),
@@ -187,12 +192,16 @@ class _mapGoogleState extends State<mapGoogle> {
     }
   }
 
+  bool isIOS = Platform.isIOS;
+
   BitmapDescriptor pinLocationIcon;
   @override
   void initState() {
     super.initState();
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(devicePixelRatio: 2.5), 'assets/marker.png')
+            ImageConfiguration(
+                /* devicePixelRatio: 1.5, */ /* size: Size(32, 32) */),
+            isIOS ? 'assets/marker_ios.png' : 'assets/marker.png')
         .then((onValue) {
       pinLocationIcon = onValue;
     });
@@ -205,9 +214,9 @@ class _mapGoogleState extends State<mapGoogle> {
       home: Scaffold(
         appBar: AppBar(
           leading: new IconButton(
-              icon: new Icon(Icons.arrow_back_ios_outlined),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
+            icon: new Icon(Icons.arrow_back_ios_outlined),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
           title: Text('Maps Sample'),
           backgroundColor: Colors.blueGrey.shade900,
         ),
@@ -230,7 +239,7 @@ class _mapGoogleState extends State<mapGoogle> {
                     print("launched is: " + launched.toString());
                     if (launched < 0)
                       showMessage(
-                          "Please zoom in to be able to see the stops!", 3);
+                          "Please zoom in to be able to see the stops!", 10);
                     isSend = true;
                   }
                 } else {

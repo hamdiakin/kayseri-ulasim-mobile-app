@@ -148,8 +148,7 @@ class _BusStopPageState extends State<BusStopPage> {
         appBar: AppBar(
           leading: new IconButton(
               icon: new Icon(Icons.arrow_back_ios_outlined),
-              onPressed: () => Navigator.pop(context)
-            ),
+              onPressed: () => Navigator.pop(context)),
           title: Text(widget.busStopName),
           actions: <Widget>[
             IconButton(
@@ -332,11 +331,53 @@ class _BusStopPageState extends State<BusStopPage> {
                                                   color: Colors.blue.shade700,
                                                 ),
                                           title: selectionState == true
-                                              ? (Text(busLinesData[
-                                                  _selectedIndexList1[
-                                                      index]]["name"]))
-                                              : Text(aprLinesData[index]["line"]
-                                                  ["name"]),
+                                              ? (RichText(
+                                                  text: TextSpan(
+                                                      style: const TextStyle(
+                                                        fontSize: 14.0,
+                                                        color: Colors.black,
+                                                      ),
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                            text: busLinesData[
+                                                                    _selectedIndexList1[
+                                                                        index]]
+                                                                ["code"],
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                        TextSpan(text: " "),
+                                                        TextSpan(
+                                                            text: busLinesData[
+                                                                _selectedIndexList1[
+                                                                    index]]["name"])
+                                                      ]),
+                                                ))
+                                              : RichText(
+                                                  text: TextSpan(
+                                                      style: const TextStyle(
+                                                        fontSize: 14.0,
+                                                        color: Colors.black,
+                                                      ),
+                                                      children: <TextSpan>[
+                                                        TextSpan(
+                                                            text: aprLinesData[
+                                                                        index]
+                                                                    ["line"]
+                                                                ["code"],
+                                                            style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold)),
+                                                        TextSpan(text: " "),
+                                                        TextSpan(
+                                                            text: aprLinesData[
+                                                                        index]
+                                                                    ["line"]
+                                                                ["name"])
+                                                      ]),
+                                                ),
                                           subtitle: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,

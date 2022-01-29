@@ -20,6 +20,8 @@ class _LineDetailState extends State<LineDetail> {
   String busCode;
   _LineDetailState({this.busStopName, this.busCode});
 
+  String yeryon = "";
+
   Color _colorContainer = Colors.white;
 
   String direction =
@@ -35,6 +37,7 @@ class _LineDetailState extends State<LineDetail> {
     this.setState(() {
       lineDetail = jsonDecode(response.body);
     });
+    yeryon = lineDetail.last["stop"]["name"] + " Direction";
     return lineDetail; // all the data about a line
   }
 
@@ -57,7 +60,7 @@ class _LineDetailState extends State<LineDetail> {
               onPressed: () => Navigator.of(context).pop(),
             ),
         backgroundColor: Colors.blueGrey.shade900,
-        title: Text("$busStopName"), // the name of bus got from busStop page
+        title: Row(children: [Expanded(child: SingleChildScrollView(scrollDirection: Axis.horizontal, child: Text("$busStopName")))]), // the name of bus got from busStop page
       ),
       body: Column(
         children: [
@@ -200,7 +203,7 @@ class _LineDetailState extends State<LineDetail> {
             children: <Widget>[
               Container(
                 color: Colors.blueGrey.shade200,
-                height: (MediaQuery.of(context).size.height) * 3.3 / 20,
+                height: (MediaQuery.of(context).size.height) * 2.3 / 20,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -209,12 +212,16 @@ class _LineDetailState extends State<LineDetail> {
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
                           width: (MediaQuery.of(context).size.width) * 12 / 20,
-                          child: Text(
-                            "$busStopName Direction",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 15.0),
-                            maxLines: 1,
-                          ),
+                          child: Row(
+                            children:[ Expanded(
+                              child: Text(
+                              yeryon,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 15.0),
+                                
+                              ),
+                            ),
+                            ]),
                         ),
                       ),
                     ),
@@ -239,10 +246,12 @@ class _LineDetailState extends State<LineDetail> {
                             if (initialIndex == 0) {
                               setState(() {
                                 direction = "DEPARTURE";
+                                yeryon =  lineDetail.last["stop"]["name"] + " Direction";
                               });
                             } else {
                               setState(() {
                                 direction = "ARRIVAL";
+                                yeryon= lineDetail.first["stop"]["name"] + " Direction";
                               });
                             }
                             getBusLine();

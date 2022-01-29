@@ -1,4 +1,4 @@
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+/* import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 //The class to manage platforms and handle notifications
 class NotificationManager {
@@ -29,3 +29,4 @@ class NotificationManager {
         0, title, body, platformChannelSpecifics);
   }
 }
+ */

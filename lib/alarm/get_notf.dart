@@ -1,4 +1,4 @@
-import 'package:android_alarm_manager/android_alarm_manager.dart';
+/* import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:kayseri_ulasim/alarm/set_an_alarm.dart';
 import '../database/db_helper_alarm.dart';
@@ -232,3 +232,4 @@ Future<void> notificate() async {
   n.showNotificationWithDefaultSound("Kayseri Ulaşım", "First Notification");
   return;
 }
+ */
