@@ -148,9 +148,10 @@ class _SearchBar extends State {
                     fontSize: 14.0,
                     color: Colors.black,
                   ),
+                  
                   children: <TextSpan>[
                     TextSpan(
-                        text: suggestion.code,
+                        text: suggestion.code.length >5 ? "" : suggestion.code,
                         style: const TextStyle(fontWeight: FontWeight.bold)),
                     TextSpan(text: ' '),
                     TextSpan(text: suggestion.name),

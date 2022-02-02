@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 import 'dart:io' show Platform;
 
+import 'package:kayseri_ulasim/pages/toast_utils.dart';
+
 class mapGoogle extends StatefulWidget {
   const mapGoogle({Key key}) : super(key: key);
 
@@ -22,15 +24,14 @@ class _mapGoogleState extends State<mapGoogle> {
   void showMessage(String message, int timeInSec) {
     setState(() {
       Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.SNACKBAR,
-        timeInSecForIosWeb: timeInSec,
-        backgroundColor: Colors.blueGrey,
-        textColor: Colors.red,
-        fontSize: 45.0);
+          msg: message,
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: timeInSec,
+          backgroundColor: Colors.blueGrey,
+          textColor: Colors.red,
+          fontSize: 45.0);
     });
-    
   }
 
   CameraPosition _initialLocation = CameraPosition(target: LatLng(0.0, 0.0));
@@ -85,9 +86,9 @@ class _mapGoogleState extends State<mapGoogle> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-               /* 38.722690, 35.486939   */
+              /* 38.722690, 35.486939   */
               _currentPosition.latitude,
-              _currentPosition.longitude, 
+              _currentPosition.longitude,
             ),
             zoom: 18.0,
           ),
@@ -240,6 +241,7 @@ class _mapGoogleState extends State<mapGoogle> {
                     if (launched < 0)
                       showMessage(
                           "Please zoom in to be able to see the stops!", 10);
+                    /* ToastUtils.showCustomToast(context, "Zoom in to see the spots"); */
                     isSend = true;
                   }
                 } else {

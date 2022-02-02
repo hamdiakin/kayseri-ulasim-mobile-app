@@ -257,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 favLength == 0
                     ? SizedBox(height: 0)
                     : Expanded(
-                        flex: 1,
+                        flex: favLength <=3 ? (favLength > 0 ? favLength : 1) : 3,
                         child: RefreshIndicator(
                           onRefresh: () {
                             mySetState(5);
@@ -322,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 // Closest bus stops
                 Text("Closest"),
                 Expanded(
-                  flex: favLength == 0 ? 11 : 2,
+                  flex: favLength == 0 ? 11 : 4,
                   child: RefreshIndicator(
                     onRefresh: () {
                       getData();

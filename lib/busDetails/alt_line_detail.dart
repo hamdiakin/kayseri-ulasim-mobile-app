@@ -1,49 +1,66 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'line_information.dart';
 import 'line_timings.dart';
 import 'package:location/location.dart';
+import 'dart:math' show cos, sqrt, asin;
 
-class LineDetail extends StatefulWidget {
+class AltLineDetail extends StatefulWidget {
   final String busStopName; //get from other page to see the details
   final String busCode; // get code for line_information.dart page
-  const LineDetail(this.busStopName, this.busCode);
+  const AltLineDetail(this.busStopName, this.busCode);
 
   @override
-  _LineDetailState createState() =>
-      _LineDetailState(busStopName: this.busStopName, busCode: this.busCode);
+  _AltLineDetailState createState() =>
+      _AltLineDetailState(busStopName: this.busStopName, busCode: this.busCode);
 }
 
-class _LineDetailState extends State<LineDetail> {
+class _AltLineDetailState extends State<AltLineDetail> {
+  // Calculating distance between two points
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
 
-  // coloring the current stop
+  returnNearest(LocationData location) async {
+    await getLoc();
+    await getBusLine();
+    double latBase = location.latitude;
+    double longBase = location.longitude;
 
-  // for scrolling to nearest item
-  final ScrollController _controller = ScrollController();
-  final double _height = 500;
+    double latTar = 0;
+    double longTar = 0;
+    double min = calculateDistance(latBase, longBase,
+        lineDetail[0]["stop"]["latitude"], lineDetail[0]["stop"]["longitude"]);
+    int min_index = 0;
 
-   void _animateToIndex() {
-    if (_controller.hasClients) {
-      _controller.animateTo(
-        indexBlink * _height *65,
-        duration: Duration(seconds: 2),
-        curve: Curves.fastOutSlowIn,
-      );
+    for (int i = 1; i < lineDetail.length; i++) {
+      latTar = lineDetail[i]["stop"]["latitude"];
+      longTar = lineDetail[i]["stop"]["longitude"];
+      if (min > calculateDistance(latBase, longBase, latTar, longTar)) {
+        min = calculateDistance(latBase, longBase, latTar, longTar);
+        min_index = i;
+      }
     }
-  } 
-    /* void _animateToIndex() {
-    _controller.animateTo(
-      8 * _height,
-      duration: Duration(seconds: 2),
-      curve: Curves.fastOutSlowIn,
-    );
-  } */
+
+    setState(() {
+      indexBlink = min_index;
+    });
+  }
+
+  // Scrolling down/up to the nearest stop
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
 
   // for location part
-  bool blink = false;
-  String isB = "";
   int indexBlink = 0;
   LocationData _currentPosition;
   Location location = Location();
@@ -77,44 +94,11 @@ class _LineDetailState extends State<LineDetail> {
     });
   }
 
-  List data;
-  Future<String> getData() async {
-    await getLoc();
-    String lat = _currentPosition.latitude.toString();
-    String long = _currentPosition.longitude.toString();
-    var response = await http.get(
-        Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/nearest?lon=$long&lat=$lat"),
-        headers: {"Accept": "application/json"});
-    setState(() {
-      data = jsonDecode(response.body);
-    });
-    return "success";
-  }
-
-  isBlink() async {
-    await getBusLine();
-    await getLoc();
-    await getData();
-
-    for (int i = 0; i < lineDetail.length; i++) {
-      // Modify the function to the nearest location settings
-      for (int j = 0; j < data.length; j++) {
-        if (lineDetail[i]["stop"]["name"] == data[j]["busStop"]["name"]) {
-          setState(() {
-            blink = true;
-            isB = lineDetail[i]["stop"]["name"];
-            indexBlink = i;
-          });
-        }
-      }
-    }
-  }
   //
 
   String busStopName;
   String busCode;
-  _LineDetailState({this.busStopName, this.busCode});
+  _AltLineDetailState({this.busStopName, this.busCode});
 
   String yeryon = "";
 
@@ -138,13 +122,13 @@ class _LineDetailState extends State<LineDetail> {
   }
 
   @override
-  void initState() {
+  Future<void> initState() {
     // TODO: implement initState
     super.initState();
+    getLoc();
     getBusLine(); //make sure the data is taken before launching
     getLoc();
-    getData();
-    isBlink();
+    returnNearest(_currentPosition);
   }
 
   //For toggle switch
@@ -154,12 +138,14 @@ class _LineDetailState extends State<LineDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.arrow_downward),
+          child: Icon(Icons.share_location),
           onPressed: () {
             setState(() {
-              indexBlink = indexBlink;
+              itemScrollController.scrollTo(
+                  index: indexBlink,
+                  duration: Duration(seconds: 2),
+                  curve: Curves.easeIn);
             });
-            _animateToIndex();
           }),
       appBar: AppBar(
         leading: new IconButton(
@@ -356,19 +342,21 @@ class _LineDetailState extends State<LineDetail> {
                             });
                             if (initialIndex == 0) {
                               setState(() {
-                                isBlink();
                                 direction = "DEPARTURE";
+                                getBusLine();
                                 yeryon = lineDetail.last["stop"]["name"] +
                                     " Direction";
-                                    getBusLine();
+                                returnNearest(_currentPosition);
                               });
                             } else {
                               setState(() {
-                                isBlink();
+                                returnNearest(_currentPosition);
                                 direction = "ARRIVAL";
-                                yeryon = lineDetail.first["stop"]["name"] +
-                                    " Direction";
                                 getBusLine();
+                                yeryon = lineDetail.last["stop"]["name"] +
+                                    " Direction";
+
+                                returnNearest(_currentPosition);
                               });
                             }
                             //getBusLine();
@@ -377,125 +365,83 @@ class _LineDetailState extends State<LineDetail> {
                         ),
                       ),
                     ),
-
-                    /*      Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: (MediaQuery.of(context).size.height) * 4 / 20,
-                        width: (MediaQuery.of(context).size.width) * 5.3 / 20,
-                        color: Colors.black38,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Expanded(
-                              // Toggle here
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.arrow_forward_rounded,
-                                  size: 28.0,
-                                  color: direction == "DEPARTURE"
-                                      ? Colors.blue
-                                      : Colors.white,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    direction =
-                                        "DEPARTURE"; //set the direction when presssed
-                                  });
-                                  getBusLine();
-                                },
-                              ),
-                            ),
-                            Expanded(
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.arrow_back,
-                                  size: 28.0,
-                                  color: direction == "DEPARTURE"
-                                      ? Colors.white
-                                      : Colors.blue,
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    direction =
-                                        "ARRIVAL"; //change the listView vice versa when clicked
-                                  });
-                                  getBusLine();
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ), */
                   ],
                 ),
               ),
             ],
           ),
           Expanded(
-            flex: 3,
-            child: lineDetail == null // check if data available
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : new ListView.builder(
-                    controller: _controller,
-                    itemCount: lineDetail == null ? 0 : lineDetail.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Column(
-                        children: [
-                          Card(
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                  bottomRight: Radius.circular(10),
-                                  topRight: Radius.circular(10)),
-                            ),
-                            color: lineDetail[index]["stop"]["name"] == isB
-                                ? Colors.blueGrey.shade200
-                                : Colors.white,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                lineDetail[index]["stop"]["name"] == isB
-                                    ? ListTile(
-                                        //   onTap: () {},
-                                        // This part of the code decides whether the tram icon or the bus icon should be used
-                                        leading: Icon(Icons.directions_bus),
-                                        title: Text(
-                                          lineDetail[index]["stop"][
-                                              "name"], //show the stops that a bus passes from
-                                          maxLines: 1,
-                                        ),
-                                        subtitle: lineDetail[index]["stop"]
-                                                    ["name"] ==
-                                                isB
-                                            ? Text(
-                                                "You are close to this stop!")
-                                            : Text(""),
-                                      )
-                                    : ListTile(
-                                        //   onTap: () {},
-                                        // This part of the code decides whether the tram icon or the bus icon should be used
-                                        leading: Icon(Icons.directions_bus),
-                                        title: Text(
-                                          lineDetail[index]["stop"][
-                                              "name"], //show the stops that a bus passes from
-                                          maxLines: 1,
-                                        ),
-                                      ),
+              flex: 3,
+              child: lineDetail == null // check if data available
+                  ? Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: () {
+                        setState(() {
+                          returnNearest(_currentPosition);
+                          itemScrollController.scrollTo(
+                              index: indexBlink,
+                              duration: Duration(seconds: 2),
+                              curve: Curves.fastOutSlowIn);
+                        });
+                        CircularProgressIndicator();
+                        return Future.value(true);
+                      },
+                      child: new ScrollablePositionedList.builder(
+                          itemScrollController: itemScrollController,
+                          itemPositionsListener: itemPositionsListener,
+                          itemCount: lineDetail == null ? 0 : lineDetail.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Column(
+                              children: [
+                                Card(
+                                  elevation: 3,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(10),
+                                        topRight: Radius.circular(10)),
+                                  ),
+                                  color: index == indexBlink
+                                      ? Colors.blueGrey.shade200
+                                      : Colors.white,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      index == indexBlink
+                                          ? ListTile(
+                                              //   onTap: () {},
+                                              // This part of the code decides whether the tram icon or the bus icon should be used
+                                              leading:
+                                                  Icon(Icons.directions_bus),
+                                              title: Text(
+                                                lineDetail[index]["stop"][
+                                                    "name"], //show the stops that a bus passes from
+                                                maxLines: 1,
+                                              ),
+                                              subtitle: index == indexBlink
+                                                  ? Text(
+                                                      "You are close to this stop!")
+                                                  : Text(""),
+                                            )
+                                          : ListTile(
+                                              //   onTap: () {},
+                                              // This part of the code decides whether the tram icon or the bus icon should be used
+                                              leading:
+                                                  Icon(Icons.directions_bus),
+                                              title: Text(
+                                                lineDetail[index]["stop"][
+                                                    "name"], //show the stops that a bus passes from
+                                                maxLines: 1,
+                                              ),
+                                            ),
+                                    ],
+                                  ),
+                                ),
                               ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 4.23,
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-          ),
+                            );
+                          }),
+                    )),
         ],
       ),
     );
