@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -9,14 +10,45 @@ import 'dart:io' show Platform;
 
 class LineInformation extends StatefulWidget {
   final String busCode; //get the code to see the line of the markers
-
-  const LineInformation(this.busCode);
+  final String direction;
+  final double navLat;
+  final double navLon;
+  const LineInformation(this.busCode, this.direction, this.navLat, this.navLon);
   @override
   _LineInformationState createState() =>
       _LineInformationState(busCode: this.busCode);
 }
 
 class _LineInformationState extends State<LineInformation> {
+  // For live positions of the busses
+  Map<String, dynamic> inStop;
+  List liveLoc = [];
+  Future<Map<String, dynamic>> getLiveLoc() async {
+    String directionNum;
+    if (widget.direction == "DEPARTURE")
+      directionNum = "1";
+    else
+      directionNum = "2";
+
+    //get data
+    var response = await http.get(
+        Uri.parse(
+            "http://kaktusmobile.kayseriulasim.com.tr/api/VehiclesInLine?lineCode=$busCode&direction=$directionNum"),
+        headers: {"Accept": "application/json"});
+    this.setState(() {
+      inStop = jsonDecode(response.body);
+    });
+    int x = inStop["vehicles"].length;
+    /*  Map deneme = inStop["vehicles"][0];
+    String propName = deneme["previousStop"]["name"];
+    String propName1 = inStop["vehicles"][0]["previousStop"]["name"]; */
+
+    for (int i = 0; i < x; i++) {
+      liveLoc.add(inStop["vehicles"][i]["vehicle"]["location"]);
+    }
+    return inStop; // all the data about a line
+  }
+
   String busCode;
   _LineInformationState({this.busCode});
 
@@ -26,9 +58,13 @@ class _LineInformationState extends State<LineInformation> {
         Uri.parse(
             "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=DEPARTURE"),
         headers: {"Accept": "application/json"});
-    this.setState(() {
-      lineInfo = jsonDecode(response.body);
-    });
+
+    if (mounted) {
+      this.setState(() {
+        lineInfo = jsonDecode(response.body);
+      });
+    }
+
     return "success";
   }
 
@@ -38,7 +74,7 @@ class _LineInformationState extends State<LineInformation> {
       CameraPosition(target: LatLng(0.0, 0.0)); // initial position
 
   // Method for retrieving the current location
-  _getUserLocation() async {
+/*   _getUserLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) async {
       setState(() {
@@ -48,7 +84,7 @@ class _LineInformationState extends State<LineInformation> {
           CameraUpdate.newCameraPosition(
             CameraPosition(
               target: LatLng(position.latitude, position.longitude),
-              zoom: 20.0,
+              zoom: 17.0,
             ),
           ),
         );
@@ -59,8 +95,12 @@ class _LineInformationState extends State<LineInformation> {
     });
   }
 
+  locationGetter() async {
+    await _getUserLocation();
+  } */
+
   void _onMapCreated(GoogleMapController controller) async {
-    _getUserLocation();
+    //locationGetter();
     await getBusLine();
     // To update mapcontroller
     setState(() {
@@ -69,8 +109,8 @@ class _LineInformationState extends State<LineInformation> {
         CameraUpdate.newCameraPosition(
           CameraPosition(
             target: LatLng(
-              _currentPosition.latitude,
-              _currentPosition.longitude,
+              widget.navLat,
+              widget.navLon,
             ),
             zoom: 15.0,
           ),
@@ -110,7 +150,7 @@ class _LineInformationState extends State<LineInformation> {
     locations.forEach((element) {
       final KMarker marker = KMarker(
         element.name,
-        "",
+        element.code,
         pinLocationIcon,
         context,
         id: MarkerId(index.toString()),
@@ -120,21 +160,77 @@ class _LineInformationState extends State<LineInformation> {
       markersList.add(marker);
       index++;
     });
+    setState(() {
+      liveIndex = index;
+    });
+    addMarkersLive(index);
   }
+
+  int liveIndex = 0;
+
+  Future<void> addMarkersLive(int index) async {
+    liveLoc.clear();
+    await getLiveLoc();
+    markersList.removeWhere((element) => element.code == "Live");
+    liveLoc.forEach((element) {
+      final KMarker marker = KMarker(
+        "Live Location",
+        "Live",
+        pinLocationIconLive,
+        context,
+        id: MarkerId((index - liveLoc.length).toString()),
+        lat: element["latitude"],
+        lng: element["longitude"],
+      );
+      markersList.add(marker);
+      index++;
+      /*  if (liveIndex == markersList.length) {
+        if (markersList.isEmpty == false) {
+          markersList.remove(markersList.last);
+        }
+        markersList.add(marker);
+      } else {
+        markersList.add(marker);
+        setState(() {
+          liveIndex++;
+        });
+      } */
+    });
+  }
+
   bool isIOS = Platform.isIOS;
 
   BitmapDescriptor pinLocationIcon;
+  BitmapDescriptor pinLocationIconLive;
+
   @override
   void initState() {
     super.initState();
     //creating markers
     BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(/* devicePixelRatio: 1.5, */ /* size: Size(32, 32) */),
+            ImageConfiguration(
+                /* devicePixelRatio: 1.5, */ /* size: Size(32, 32) */),
             isIOS ? 'assets/marker_ios.png' : 'assets/marker.png')
         .then((onValue) {
       pinLocationIcon = onValue;
     });
-    _getUserLocation();
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(
+                /* devicePixelRatio: 1.5, */ /* size: Size(32, 32) */),
+            isIOS ? 'assets/livebus_ios.png' : 'assets/livebus.png')
+        .then((onValue) {
+      pinLocationIconLive = onValue;
+    });
+    if (mounted) {
+      new Timer.periodic(
+          Duration(seconds: 5),
+          (Timer t) => setState(() {
+                //markersList.removeWhere((element) => element.code == "Live");
+                addMarkersLive(liveIndex);
+              }));
+    }
+
+    //locationGetter();
     getBusLine();
   }
 

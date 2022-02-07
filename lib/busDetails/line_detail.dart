@@ -238,7 +238,7 @@ class _LineDetailState extends State<LineDetail> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      LineInformation(busCode)));
+                                      LineInformation(busCode, direction, _height, _height)));
                         },
                         child: Container(
                             child: Column(

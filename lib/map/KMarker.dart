@@ -20,8 +20,8 @@ class KMarker extends Marker {
           icon: deneme,
           infoWindow: InfoWindow(
             title: name,
-            snippet: 'Name of the bus stop: $name.',
-            onTap: () => Navigator.push(
+            snippet: code == "Live" ? "This is live location information!" : 'Name of the bus stop: $name.',
+            onTap: () => code == "Live" ? {}: Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => BusStopPage(

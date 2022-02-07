@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +8,9 @@ import 'line_information.dart';
 import 'line_timings.dart';
 import 'package:location/location.dart';
 import 'dart:math' show cos, sqrt, asin;
+
+StreamController<int> streamControllerScroll =
+    StreamController<int>.broadcast();
 
 class AltLineDetail extends StatefulWidget {
   final String busStopName; //get from other page to see the details
@@ -19,6 +23,50 @@ class AltLineDetail extends StatefulWidget {
 }
 
 class _AltLineDetailState extends State<AltLineDetail> {
+  // For more smooth experience
+
+  bool nearStop = false;
+  Stream<int> stream = streamControllerScroll.stream;
+  mySetState(int x) {
+    setState(() {
+      returnNearest();
+      itemScrollController.scrollTo(
+          index: indexBlink,
+          duration: Duration(seconds: 2),
+          curve: Curves.fastOutSlowIn);
+      nearStop = true;
+    });
+  }
+
+  // For coloring the current location
+  Map<String, dynamic> inStop;
+  List<String> stopList = [];
+  Future<Map<String, dynamic>> getInStops() async {
+    String directionNum;
+    if (direction == "DEPARTURE")
+      directionNum = "1";
+    else
+      directionNum = "2";
+
+    //get data
+    var response = await http.get(
+        Uri.parse(
+            "http://kaktusmobile.kayseriulasim.com.tr/api/VehiclesInLine?lineCode=$busCode&direction=$directionNum"),
+        headers: {"Accept": "application/json"});
+    this.setState(() {
+      inStop = jsonDecode(response.body);
+    });
+    int x = inStop["vehicles"].length;
+    /*  Map deneme = inStop["vehicles"][0];
+    String propName = deneme["previousStop"]["name"];
+    String propName1 = inStop["vehicles"][0]["previousStop"]["name"]; */
+
+    for (int i = 0; i < x; i++) {
+      stopList.add(inStop["vehicles"][i]["previousStop"]["name"]);
+    }
+    return inStop; // all the data about a line
+  }
+
   // Calculating distance between two points
   double calculateDistance(lat1, lon1, lat2, lon2) {
     var p = 0.017453292519943295;
@@ -29,17 +77,18 @@ class _AltLineDetailState extends State<AltLineDetail> {
     return 12742 * asin(sqrt(a));
   }
 
-  returnNearest(LocationData location) async {
+  returnNearest() async {
     await getLoc();
     await getBusLine();
-    double latBase = location.latitude;
-    double longBase = location.longitude;
+    double latBase = _currentPosition.latitude;
+    double longBase = _currentPosition.longitude;
 
     double latTar = 0;
     double longTar = 0;
     double min = calculateDistance(latBase, longBase,
         lineDetail[0]["stop"]["latitude"], lineDetail[0]["stop"]["longitude"]);
-    int min_index = 0;
+
+    int min_index = -1;
 
     for (int i = 1; i < lineDetail.length; i++) {
       latTar = lineDetail[i]["stop"]["latitude"];
@@ -50,9 +99,15 @@ class _AltLineDetailState extends State<AltLineDetail> {
       }
     }
 
-    setState(() {
+    if (min_index != -1) {
+      streamControllerScroll.add(5);
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
+          indexBlink = min_index;
+        }));
+    /* setState(() {
       indexBlink = min_index;
-    });
+    }); */
   }
 
   // Scrolling down/up to the nearest stop
@@ -64,6 +119,8 @@ class _AltLineDetailState extends State<AltLineDetail> {
   int indexBlink = 0;
   LocationData _currentPosition;
   Location location = Location();
+  double navLat = 0;
+  double navLon = 0;
 
   getLoc() async {
     bool _serviceEnabled;
@@ -90,6 +147,8 @@ class _AltLineDetailState extends State<AltLineDetail> {
       print("${currentLocation.longitude} : ${currentLocation.longitude}");
       setState(() {
         _currentPosition = currentLocation;
+        navLat = currentLocation.latitude;
+        navLon = currentLocation.longitude;
       });
     });
   }
@@ -114,9 +173,12 @@ class _AltLineDetailState extends State<AltLineDetail> {
         Uri.parse(
             "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=$direction"),
         headers: {"Accept": "application/json"});
-    this.setState(() {
-      lineDetail = jsonDecode(response.body);
-    });
+    if (mounted) {
+      this.setState(() {
+        lineDetail = jsonDecode(response.body);
+      });
+    }
+
     yeryon = lineDetail.last["stop"]["name"] + " Direction";
     return lineDetail; // all the data about a line
   }
@@ -125,10 +187,13 @@ class _AltLineDetailState extends State<AltLineDetail> {
   Future<void> initState() {
     // TODO: implement initState
     super.initState();
+    stream.listen((index) {
+      mySetState(index);
+    });
     getLoc();
-    getBusLine(); //make sure the data is taken before launching
-    getLoc();
-    returnNearest(_currentPosition);
+    getBusLine();
+    returnNearest();
+    getInStops();
   }
 
   //For toggle switch
@@ -223,8 +288,8 @@ class _AltLineDetailState extends State<AltLineDetail> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      LineInformation(busCode)));
+                                  builder: (context) => LineInformation(
+                                      busCode, direction, navLat, navLon)));
                         },
                         child: Container(
                             child: Column(
@@ -260,7 +325,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
                       InkWell(
                         onTap: () {
                           setState(() {
-                            _colorContainer = Colors.black12;
+                            _colorContainer = Colors.white;
                           });
                           Navigator.push(
                               context,
@@ -339,6 +404,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
                           onToggle: (index) {
                             setState(() {
                               initialIndex = index;
+                              nearStop = false;
                             });
                             if (initialIndex == 0) {
                               setState(() {
@@ -346,17 +412,17 @@ class _AltLineDetailState extends State<AltLineDetail> {
                                 getBusLine();
                                 yeryon = lineDetail.last["stop"]["name"] +
                                     " Direction";
-                                returnNearest(_currentPosition);
+                                returnNearest();
                               });
                             } else {
                               setState(() {
-                                returnNearest(_currentPosition);
+                                returnNearest();
                                 direction = "ARRIVAL";
                                 getBusLine();
                                 yeryon = lineDetail.last["stop"]["name"] +
                                     " Direction";
 
-                                returnNearest(_currentPosition);
+                                returnNearest();
                               });
                             }
                             //getBusLine();
@@ -379,7 +445,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
                   : RefreshIndicator(
                       onRefresh: () {
                         setState(() {
-                          returnNearest(_currentPosition);
+                          returnNearest();
                           itemScrollController.scrollTo(
                               index: indexBlink,
                               duration: Duration(seconds: 2),
@@ -388,59 +454,102 @@ class _AltLineDetailState extends State<AltLineDetail> {
                         CircularProgressIndicator();
                         return Future.value(true);
                       },
-                      child: new ScrollablePositionedList.builder(
-                          itemScrollController: itemScrollController,
-                          itemPositionsListener: itemPositionsListener,
-                          itemCount: lineDetail == null ? 0 : lineDetail.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Column(
-                              children: [
-                                Card(
-                                  elevation: 3,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        bottomRight: Radius.circular(10),
-                                        topRight: Radius.circular(10)),
-                                  ),
-                                  color: index == indexBlink
-                                      ? Colors.blueGrey.shade200
-                                      : Colors.white,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      index == indexBlink
-                                          ? ListTile(
-                                              //   onTap: () {},
-                                              // This part of the code decides whether the tram icon or the bus icon should be used
-                                              leading:
-                                                  Icon(Icons.directions_bus),
-                                              title: Text(
-                                                lineDetail[index]["stop"][
-                                                    "name"], //show the stops that a bus passes from
-                                                maxLines: 1,
-                                              ),
-                                              subtitle: index == indexBlink
-                                                  ? Text(
-                                                      "You are close to this stop!")
-                                                  : Text(""),
-                                            )
-                                          : ListTile(
-                                              //   onTap: () {},
-                                              // This part of the code decides whether the tram icon or the bus icon should be used
-                                              leading:
-                                                  Icon(Icons.directions_bus),
-                                              title: Text(
-                                                lineDetail[index]["stop"][
-                                                    "name"], //show the stops that a bus passes from
-                                                maxLines: 1,
-                                              ),
-                                            ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            );
-                          }),
+                      child: _currentPosition == null
+                          ? Center(child: CircularProgressIndicator())
+                          : new ScrollablePositionedList.builder(
+                              itemScrollController: itemScrollController,
+                              itemPositionsListener: itemPositionsListener,
+                              itemCount:
+                                  lineDetail == null ? 0 : lineDetail.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Column(
+                                  children: [
+                                    Card(
+                                      elevation: 3,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.only(
+                                            bottomRight: Radius.circular(10),
+                                            topRight: Radius.circular(10)),
+                                      ),
+                                      color: index == indexBlink
+                                          ? (nearStop == true
+                                              ? Colors.blueGrey.shade200
+                                              : Colors.white)
+                                          : Colors.white,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          index == indexBlink
+                                              ? (nearStop == false
+                                                  ? ListTile(
+                                                      leading: stopList.contains(
+                                                              lineDetail[index]
+                                                                      ["stop"]
+                                                                  ["name"])
+                                                          ? Icon(
+                                                              Icons
+                                                                  .directions_bus,
+                                                              color:
+                                                                  Colors.blue)
+                                                          : Icon(
+                                                              Icons
+                                                                  .directions_bus,
+                                                              color:
+                                                                  Colors.grey),
+                                                      title: Text(
+                                                        lineDetail[index]
+                                                            ["stop"]["name"],
+                                                        maxLines: 1,
+                                                      ),
+                                                    )
+                                                  : ListTile(
+                                                      leading: stopList.contains(
+                                                              lineDetail[index]
+                                                                      ["stop"]
+                                                                  ["name"])
+                                                          ? Icon(
+                                                              Icons
+                                                                  .directions_bus,
+                                                              color:
+                                                                  Colors.blue)
+                                                          : Icon(
+                                                              Icons
+                                                                  .directions_bus,
+                                                              color:
+                                                                  Colors.grey),
+                                                      title: Text(
+                                                        lineDetail[index]
+                                                            ["stop"]["name"],
+                                                        maxLines: 1,
+                                                      ),
+                                                      subtitle: index ==
+                                                              indexBlink
+                                                          ? Text(
+                                                              "You are close to this stop!")
+                                                          : Text(""),
+                                                    ))
+                                              : ListTile(
+                                                  leading: stopList.contains(
+                                                          lineDetail[index]
+                                                              ["stop"]["name"])
+                                                      ? Icon(
+                                                          Icons.directions_bus,
+                                                          color: Colors.blue)
+                                                      : Icon(
+                                                          Icons.directions_bus,
+                                                          color: Colors.grey),
+                                                  title: Text(
+                                                    lineDetail[index]["stop"]
+                                                        ["name"],
+                                                    maxLines: 1,
+                                                  ),
+                                                ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
                     )),
         ],
       ),
