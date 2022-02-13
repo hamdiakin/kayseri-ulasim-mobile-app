@@ -29,12 +29,12 @@ class _AltLineDetailState extends State<AltLineDetail> {
   Stream<int> stream = streamControllerScroll.stream;
   mySetState(int x) {
     setState(() {
-      returnNearest();
+      //returnNearest();
       itemScrollController.scrollTo(
           index: indexBlink,
           duration: Duration(seconds: 2),
           curve: Curves.fastOutSlowIn);
-      nearStop = true;
+      //nearStop = true;
     });
   }
 
@@ -88,23 +88,33 @@ class _AltLineDetailState extends State<AltLineDetail> {
     double min = calculateDistance(latBase, longBase,
         lineDetail[0]["stop"]["latitude"], lineDetail[0]["stop"]["longitude"]);
 
-    int min_index = -1;
+    int min_index = 0;
 
     for (int i = 1; i < lineDetail.length; i++) {
       latTar = lineDetail[i]["stop"]["latitude"];
       longTar = lineDetail[i]["stop"]["longitude"];
       if (min > calculateDistance(latBase, longBase, latTar, longTar)) {
         min = calculateDistance(latBase, longBase, latTar, longTar);
-        min_index = i;
+        //min_index = i;
+        setState(() {
+          min_index = i;
+        });
       }
     }
 
     if (min_index != -1) {
       streamControllerScroll.add(5);
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
+    /* WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
           indexBlink = min_index;
-        }));
+          nearStop = true;
+        })); */
+    if (mounted) {
+      setState(() {
+        indexBlink = min_index;
+        nearStop = true;
+      });
+    }
     /* setState(() {
       indexBlink = min_index;
     }); */
@@ -119,8 +129,8 @@ class _AltLineDetailState extends State<AltLineDetail> {
   int indexBlink = 0;
   LocationData _currentPosition;
   Location location = Location();
-  double navLat = 0;
-  double navLon = 0;
+  double navLat = 38.722690;
+  double navLon = 35.486939;
 
   getLoc() async {
     bool _serviceEnabled;
@@ -158,15 +168,11 @@ class _AltLineDetailState extends State<AltLineDetail> {
   String busStopName;
   String busCode;
   _AltLineDetailState({this.busStopName, this.busCode});
-
   String yeryon = "";
-
-  Color _colorContainer = Colors.white;
-
   String direction =
       "DEPARTURE"; // to change the direction when pressed the icons
-
   List lineDetail;
+  Future<List> lineFuture;
   Future<List<dynamic>> getBusLine() async {
     //get data
     var response = await http.get(
@@ -194,6 +200,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
     getBusLine();
     returnNearest();
     getInStops();
+    lineFuture = getBusLine();
   }
 
   //For toggle switch
@@ -236,8 +243,8 @@ class _AltLineDetailState extends State<AltLineDetail> {
                   width: (MediaQuery.of(context).size.height) * 3.52 / 20,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.black38),
-                    color:
-                        _colorContainer, //determine which color will be given on clicked
+                    color: Colors
+                        .white30, //determine which color will be given on clicked
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -275,16 +282,14 @@ class _AltLineDetailState extends State<AltLineDetail> {
                   width: (MediaQuery.of(context).size.height) * 3.52 / 20,
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.black38),
-                    color: _colorContainer,
+                    color: Colors.white30,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       InkWell(
                         onTap: () {
-                          setState(() {
-                            _colorContainer = Colors.black12;
-                          });
+                          setState(() {});
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -316,7 +321,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
                   height: (MediaQuery.of(context).size.height) * 3.52 / 20,
                   width: (MediaQuery.of(context).size.height) * 3.52 / 20,
                   decoration: BoxDecoration(
-                    color: _colorContainer,
+                    color: Colors.white30,
                     border: Border.all(color: Colors.black38),
                   ),
                   child: Column(
@@ -325,7 +330,8 @@ class _AltLineDetailState extends State<AltLineDetail> {
                       InkWell(
                         onTap: () {
                           setState(() {
-                            _colorContainer = Colors.white;
+                            /* 
+                            _colorContainer = Colors.white; */
                           });
                           Navigator.push(
                               context,
@@ -377,7 +383,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
                           child: Row(children: [
                             Expanded(
                               child: Text(
-                                yeryon,
+                                yeryon == "" ? widget.busStopName : yeryon,
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15.0),
@@ -405,24 +411,27 @@ class _AltLineDetailState extends State<AltLineDetail> {
                             setState(() {
                               initialIndex = index;
                               nearStop = false;
+                              lineFuture = getBusLine();
                             });
                             if (initialIndex == 0) {
                               setState(() {
                                 direction = "DEPARTURE";
-                                getBusLine();
-                                yeryon = lineDetail.last["stop"]["name"] +
-                                    " Direction";
-                                returnNearest();
+                                getBusLine().then((value) {
+                                  yeryon =
+                                      value.last["stop"]["name"] + " Direction";
+
+                                  returnNearest();
+                                });
                               });
                             } else {
                               setState(() {
-                                returnNearest();
                                 direction = "ARRIVAL";
-                                getBusLine();
-                                yeryon = lineDetail.last["stop"]["name"] +
-                                    " Direction";
+                                getBusLine().then((value) {
+                                  yeryon =
+                                      value.last["stop"]["name"] + " Direction";
 
-                                returnNearest();
+                                  returnNearest();
+                                });
                               });
                             }
                             //getBusLine();
@@ -437,12 +446,12 @@ class _AltLineDetailState extends State<AltLineDetail> {
             ],
           ),
           Expanded(
-              flex: 3,
-              child: lineDetail == null // check if data available
-                  ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : RefreshIndicator(
+            flex: 3,
+            child: FutureBuilder(
+                future: lineFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return RefreshIndicator(
                       onRefresh: () {
                         setState(() {
                           returnNearest();
@@ -550,7 +559,20 @@ class _AltLineDetailState extends State<AltLineDetail> {
                                   ],
                                 );
                               }),
-                    )),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text(
+                      "error",
+                      style: TextStyle(color: Colors.grey[200]),
+                    );
+                  }
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CircularProgressIndicator(),
+                      ]);
+                }),
+          ),
         ],
       ),
     );

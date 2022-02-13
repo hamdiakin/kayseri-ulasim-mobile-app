@@ -423,29 +423,34 @@ class _LineTimingsState extends State<LineTimings> {
               height: 15,
             ),
 
-            RollingSwitch.icon(
-              onChanged: (bool state) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (state) {
-                      setState(() {
-                        decidedStation = false;
-                      });
-                    } else {
-                      setState(() {
-                        decidedStation = true;
-                      });
-                    }
-                  });
-              },
-              rollingInfoRight: const RollingIconInfo(
-                icon: Icons.arrow_forward_rounded,
-                text: Text('Departure'),
+            Flexible(
+              child: RollingSwitch.icon(
+                onChanged: (bool state) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (state) {
+                        setState(() {
+                          decidedStation = false;
+                        });
+                      } else {
+                        setState(() {
+                          decidedStation = true;
+                        });
+                      }
+                    });
+                },
+                rollingInfoRight: const RollingIconInfo(
+                  icon: Icons.arrow_forward_rounded,
+                  text: Text('Departure'),
+                ),
+                rollingInfoLeft: const RollingIconInfo(
+                  icon: Icons.arrow_back_rounded,
+                  backgroundColor: Colors.grey,
+                  text: Text('Arrival'),
+                ),
               ),
-              rollingInfoLeft: const RollingIconInfo(
-                icon: Icons.arrow_back_rounded,
-                backgroundColor: Colors.grey,
-                text: Text('Arrival'),
-              ),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 1/40
             ),
             /* Center(
               child: LiteRollingSwitch(

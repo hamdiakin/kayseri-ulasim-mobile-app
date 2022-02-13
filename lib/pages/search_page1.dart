@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/busDetails/alt_line_detail.dart';
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 
 import 'bus_stop.dart';
@@ -57,7 +58,7 @@ class _SearchBar extends State {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back_ios),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -126,7 +127,7 @@ class _SearchBar extends State {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => LineDetail(
+                            builder: (context) => AltLineDetail(
                                   suggestion.name,
                                   suggestion.code,
                                 )));
