@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/alt_line_detail.dart';
+import 'package:kayseri_ulasim/busDetails/alt_line_detail2.dart';
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/pages/home_page.dart';
@@ -324,7 +325,7 @@ class _BusStopPageState extends State<BusStopPage> {
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            AltLineDetail(
+                                                            AltLineDetail2(
                                                                 "${aprLinesData[index]["line"]["name"]}",
                                                                 "${aprLinesData[index]["line"]["code"]}")));
                                           },

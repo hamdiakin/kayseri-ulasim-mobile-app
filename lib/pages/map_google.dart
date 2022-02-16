@@ -28,9 +28,9 @@ class _mapGoogleState extends State<mapGoogle> {
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.SNACKBAR,
           timeInSecForIosWeb: timeInSec,
-          backgroundColor: Colors.blueGrey,
-          textColor: Colors.red,
-          fontSize: 45.0);
+          backgroundColor: Colors.grey.shade300,
+          textColor: Colors.black87,
+          fontSize: 16.0);
     });
   }
 
@@ -218,7 +218,7 @@ class _mapGoogleState extends State<mapGoogle> {
             icon: new Icon(Icons.arrow_back_ios_outlined),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: Text('Maps Sample'),
+          title: Text('Maps Sampleasjdcnalkscnask'),
           backgroundColor: Colors.blueGrey.shade900,
         ),
         body: Stack(
@@ -240,7 +240,7 @@ class _mapGoogleState extends State<mapGoogle> {
                     print("launched is: " + launched.toString());
                     if (launched < 0)
                       showMessage(
-                          "Please zoom in to be able to see the stops!", 10);
+                          "Please zoom in to be able to see the stops!", 3);
                     /* ToastUtils.showCustomToast(context, "Zoom in to see the spots"); */
                     isSend = true;
                   }

@@ -1,4 +1,4 @@
-/*import 'dart:async';
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -12,17 +12,17 @@ import 'dart:math' show cos, sqrt, asin;
 StreamController<int> streamControllerScroll =
     StreamController<int>.broadcast();
 
-class AltLineDetail extends StatefulWidget {
+class AltLineDetail2 extends StatefulWidget {
   final String busStopName; //get from other page to see the details
   final String busCode; // get code for line_information.dart page
-  const AltLineDetail(this.busStopName, this.busCode);
+  const AltLineDetail2(this.busStopName, this.busCode);
 
   @override
-  _AltLineDetailState createState() =>
-      _AltLineDetailState(busStopName: this.busStopName, busCode: this.busCode);
+  _AltLineDetail2State createState() => _AltLineDetail2State(
+      busStopName: this.busStopName, busCode: this.busCode);
 }
 
-class _AltLineDetailState extends State<AltLineDetail> {
+class _AltLineDetail2State extends State<AltLineDetail2> {
   // For more smooth experience
 
   bool nearStop = false;
@@ -78,15 +78,37 @@ class _AltLineDetailState extends State<AltLineDetail> {
   }
 
   returnNearest() async {
-    await getLoc();
-    await getBusLine();
-    double latBase = _currentPosition.latitude;
-    double longBase = _currentPosition.longitude;
+    double latBase = 38.722690;
+    double longBase = 35.486939;
+
+    if (_currentPosition == null) {
+      await getLoc().then((value) => {
+            latBase = value.latitude,
+            longBase = value.longitude,
+          });
+    } else {
+      latBase = _currentPosition.latitude;
+      longBase = _currentPosition.longitude;
+    }
 
     double latTar = 0;
     double longTar = 0;
-    double min = calculateDistance(latBase, longBase,
-        lineDetail[0]["stop"]["latitude"], lineDetail[0]["stop"]["longitude"]);
+    double min = -1;
+    if (lineDetail == null) {
+      await getBusLine().then((value) => {
+            min = calculateDistance(
+                latBase,
+                longBase,
+                lineDetail[0]["stop"]["latitude"],
+                lineDetail[0]["stop"]["longitude"])
+          });
+    } else {
+      min = calculateDistance(
+          latBase,
+          longBase,
+          lineDetail[0]["stop"]["latitude"],
+          lineDetail[0]["stop"]["longitude"]);
+    }
 
     int min_index = 0;
 
@@ -132,7 +154,7 @@ class _AltLineDetailState extends State<AltLineDetail> {
   double navLat = 38.722690;
   double navLon = 35.486939;
 
-  getLoc() async {
+  Future getLoc() async {
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 
@@ -161,17 +183,20 @@ class _AltLineDetailState extends State<AltLineDetail> {
         navLon = currentLocation.longitude;
       });
     });
+    return _currentPosition;
   }
 
-  //
+  // For two directions
 
+  // departure
   String busStopName;
   String busCode;
-  _AltLineDetailState({this.busStopName, this.busCode});
+  _AltLineDetail2State({this.busStopName, this.busCode});
   String yeryon = "";
   String direction =
       "DEPARTURE"; // to change the direction when pressed the icons
   List lineDetail;
+  List copy;
   Future<List> lineFuture;
   Future<List<dynamic>> getBusLine() async {
     //get data
@@ -185,8 +210,30 @@ class _AltLineDetailState extends State<AltLineDetail> {
       });
     }
 
-    yeryon = lineDetail.last["stop"]["name"] + " Direction";
+    setState(() {
+      yeryon = lineDetail.last["stop"]["name"] + " Direction";
+    });
+    copy = lineDetail;
     return lineDetail; // all the data about a line
+  }
+
+  // arrival
+  List lineDetailArrival;
+  Future<List> lineFutureArrival;
+  Future<List<dynamic>> getBusLineArr() async {
+    //get data
+    var response = await http.get(
+        Uri.parse(
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=ARRIVAL"),
+        headers: {"Accept": "application/json"});
+    if (mounted) {
+      this.setState(() {
+        lineDetailArrival = jsonDecode(response.body);
+      });
+    }
+
+
+    return lineDetailArrival; // all the data about a line
   }
 
   @override
@@ -198,9 +245,11 @@ class _AltLineDetailState extends State<AltLineDetail> {
     });
     getLoc();
     getBusLine();
+    getBusLineArr();
     returnNearest();
     getInStops();
     lineFuture = getBusLine();
+    lineFutureArrival = getBusLineArr();
   }
 
   //For toggle switch
@@ -411,27 +460,34 @@ class _AltLineDetailState extends State<AltLineDetail> {
                             setState(() {
                               initialIndex = index;
                               nearStop = false;
-                              lineFuture = getBusLine();
                             });
                             if (initialIndex == 0) {
                               setState(() {
+                                lineDetail = copy;
                                 direction = "DEPARTURE";
-                                getBusLine().then((value) {
+                                /* getBusLine().then((value) {
                                   yeryon =
                                       value.last["stop"]["name"] + " Direction";
 
                                   returnNearest();
-                                });
+                                }); */
+                                yeryon = lineDetail.last["stop"]["name"] +
+                                    " Direction";
+                                returnNearest();
                               });
                             } else {
                               setState(() {
+                                lineDetail = lineDetailArrival;
                                 direction = "ARRIVAL";
-                                getBusLine().then((value) {
+                                /* getBusLine().then((value) {
                                   yeryon =
                                       value.last["stop"]["name"] + " Direction";
 
                                   returnNearest();
-                                });
+                                }); */
+                                yeryon = lineDetail.last["stop"]["name"] +
+                                    " Direction";
+                                returnNearest();
                               });
                             }
                             //getBusLine();
@@ -460,12 +516,13 @@ class _AltLineDetailState extends State<AltLineDetail> {
                               duration: Duration(seconds: 2),
                               curve: Curves.fastOutSlowIn);
                         });
-                        CircularProgressIndicator();
+                        CircularProgressIndicator(color: Colors.green);
                         return Future.value(true);
                       },
-                      child: _currentPosition == null
+                      child: /* _currentPosition == null
                           ? Center(child: CircularProgressIndicator())
-                          : new ScrollablePositionedList.builder(
+                          :  */
+                          new ScrollablePositionedList.builder(
                               itemScrollController: itemScrollController,
                               itemPositionsListener: itemPositionsListener,
                               itemCount:
@@ -577,4 +634,4 @@ class _AltLineDetailState extends State<AltLineDetail> {
       ),
     );
   }
-}*/
+}

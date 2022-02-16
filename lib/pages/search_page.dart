@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/alt_line_detail.dart';
+import 'package:kayseri_ulasim/busDetails/alt_line_detail2.dart';
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 
@@ -134,7 +135,7 @@ class DataSearch extends SearchDelegate<String> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AltLineDetail(
+                              builder: (context) => AltLineDetail2(
                                     searchQuery[index].name,
                                     searchQuery[index].code,
                                   )));
