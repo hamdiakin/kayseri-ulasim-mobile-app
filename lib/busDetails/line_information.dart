@@ -6,47 +6,98 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/map/KMarker.dart';
 import 'package:kayseri_ulasim/map/locations.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'dart:math';
 import 'dart:io' show Platform;
 
 class LineInformation extends StatefulWidget {
+  final String busName;
   final String busCode; //get the code to see the line of the markers
   final String direction;
   final double navLat;
   final double navLon;
-  const LineInformation(this.busCode, this.direction, this.navLat, this.navLon);
+  const LineInformation(
+      this.busName, this.busCode, this.direction, this.navLat, this.navLon);
   @override
   _LineInformationState createState() =>
       _LineInformationState(busCode: this.busCode);
 }
 
 class _LineInformationState extends State<LineInformation> {
-  // For live positions of the busses
-  Map<String, dynamic> inStop;
+  // Live location for Trams, complicated bits yuck
+/*   Map<String, dynamic> inStop;
   List liveLoc = [];
   Future<Map<String, dynamic>> getLiveLoc() async {
-    String directionNum;
-    if (widget.direction == "DEPARTURE")
-      directionNum = "1";
-    else
-      directionNum = "2";
-
     //get data
     var response = await http.get(
         Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/VehiclesInLine?lineCode=$busCode&direction=$directionNum"),
+            "https://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=${widget.direction}"),
         headers: {"Accept": "application/json"});
     this.setState(() {
       inStop = jsonDecode(response.body);
     });
-    int x = inStop["vehicles"].length;
-    /*  Map deneme = inStop["vehicles"][0];
+
+    for (int i = 0; i < inStop.length; i++) {
+      if (inStop[i]["buses"] != null) {
+        for (int j = 0; j < inStop[i]["buses"].length; j++) {
+          liveLoc.add(inStop[i]["buses"][j]["busLocation"]);
+        }
+      }
+    }
+    return inStop; // all the data about a line
+  }
+ */
+  // For live positions of the busses
+  Map<String, dynamic> inStop;
+  List inStop1 = [];
+  List liveLoc = [];
+  Future<Map<String, dynamic>> getLiveLoc() async {
+    if (widget.busCode == "T1" || widget.busCode == "T2") {
+      var response = await http.get(
+          Uri.parse(
+              "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=${widget.direction}"),
+          headers: {"Accept": "application/json"});
+      this.setState(() {
+        inStop1 = jsonDecode(response.body);
+      });
+
+      for (int i = 0; i < inStop1.length; i++) {
+        if (inStop1[i]["buses"] != null) {
+          for (int j = 0; j < inStop1[i]["buses"].length; j++) {
+            liveLoc.add(inStop1[i]["buses"][j]["busLocation"]);
+          }
+        }
+      }
+      setState(() {
+        inStop1 = inStop1;
+      });
+    } else {
+      String directionNum;
+      if (widget.direction == "DEPARTURE")
+        directionNum = "1";
+      else
+        directionNum = "2";
+
+      //get data
+      var response = await http.get(
+          Uri.parse(
+              "http://kaktusmobile.kayseriulasim.com.tr/api/VehiclesInLine?lineCode=$busCode&direction=$directionNum"),
+          headers: {"Accept": "application/json"});
+      this.setState(() {
+        inStop = jsonDecode(response.body);
+      });
+      int x = inStop["vehicles"].length;
+      /*  Map deneme = inStop["vehicles"][0];
     String propName = deneme["previousStop"]["name"];
     String propName1 = inStop["vehicles"][0]["previousStop"]["name"]; */
 
-    for (int i = 0; i < x; i++) {
-      liveLoc.add(inStop["vehicles"][i]["vehicle"]["location"]);
+      for (int i = 0; i < x; i++) {
+        liveLoc.add(inStop["vehicles"][i]["vehicle"]["location"]);
+      }
+      return inStop;
     }
-    return inStop; // all the data about a line
+
+    // all the data about a line
   }
 
   String busCode;
@@ -144,6 +195,8 @@ class _LineInformationState extends State<LineInformation> {
 
   Set<KMarker> markersList = new Set();
   List<Marker> customMarkers = [];
+  Set<Polyline> _polyline = {};
+  List<LatLng> latlng = List();
 
   void addMarkers() {
     int index = 0;
@@ -159,9 +212,26 @@ class _LineInformationState extends State<LineInformation> {
       );
       markersList.add(marker);
       index++;
+      latlng.add(LatLng(element.lat, element.long));
     });
     setState(() {
       liveIndex = index;
+      for (int i = 0; i < latlng.length; i++) {
+        _polyline.add(Polyline(
+          polylineId: PolylineId(index.toString()),
+          visible: true,
+          //latlng is List<LatLng>
+          points: latlng,
+          color: Colors.blue,
+        ));
+      }
+
+      mapController.animateCamera(
+        CameraUpdate.newLatLngBounds(
+          getBounds(markersList),
+          10.0,
+        ),
+      );
     });
     addMarkersLive(index);
   }
@@ -198,6 +268,24 @@ class _LineInformationState extends State<LineInformation> {
     });
   }
 
+  // to fit in
+  LatLngBounds getBounds(Set<Marker> markersList) {
+    var lngs = markersList.map<double>((m) => m.position.longitude).toList();
+    var lats = markersList.map<double>((m) => m.position.latitude).toList();
+
+    double topMost = lngs.reduce(max);
+    double leftMost = lats.reduce(min);
+    double rightMost = lats.reduce(max);
+    double bottomMost = lngs.reduce(min);
+
+    LatLngBounds bounds = LatLngBounds(
+      northeast: LatLng(rightMost, topMost),
+      southwest: LatLng(leftMost, bottomMost),
+    );
+
+    return bounds;
+  }
+
   bool isIOS = Platform.isIOS;
 
   BitmapDescriptor pinLocationIcon;
@@ -221,14 +309,13 @@ class _LineInformationState extends State<LineInformation> {
         .then((onValue) {
       pinLocationIconLive = onValue;
     });
-    if (mounted) {
       new Timer.periodic(
           Duration(seconds: 5),
           (Timer t) => setState(() {
                 //markersList.removeWhere((element) => element.code == "Live");
                 addMarkersLive(liveIndex);
               }));
-    }
+    
 
     //locationGetter();
     getBusLine();
@@ -237,11 +324,16 @@ class _LineInformationState extends State<LineInformation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Maps Sample'),
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back_ios_outlined),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(widget.busName),
         backgroundColor: Colors.blueGrey.shade900,
       ),
       body: Stack(children: <Widget>[
         GoogleMap(
+          polylines: _polyline,
           myLocationEnabled: true,
           myLocationButtonEnabled: true,
           zoomControlsEnabled: false,

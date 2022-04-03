@@ -157,7 +157,12 @@ class _BusStopPageState extends State<BusStopPage> {
           leading: new IconButton(
               icon: new Icon(Icons.arrow_back_ios_outlined),
               onPressed: () => Navigator.pop(context)),
-          title: Text(widget.busStopName),
+          title: Row(children: [
+          Expanded(
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Text(widget.busStopName)))
+        ]),
           actions: <Widget>[
             IconButton(
               icon: check == true

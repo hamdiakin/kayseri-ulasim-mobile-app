@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 //import 'package:barcode_scan_fix/barcode_scan.dart';
+import 'package:barcode_scan_fix/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,7 +12,7 @@ import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 import 'package:kayseri_ulasim/pages/search_page1.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 StreamController<int> streamController = StreamController<int>();
 
 class MyHomePage extends StatefulWidget {
@@ -226,7 +227,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           new Spacer(),
                           IconButton(
                             onPressed: () {
-                              //scan();
+                              scanNgo().whenComplete(() {
+                                if (qrStopCode != "") {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => BusStopPage(
+                                              busStopName:
+                                                  "Stop Number: " + qrStopCode,
+                                              busStopCode: qrStopCode)));
+                                  setState(() {
+                                    //qrStopCode = "";
+                                  });
+                                }
+                              });
                             },
                             icon: Icon(Icons.qr_code),
                             color: Colors.white,
@@ -257,7 +271,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 favLength == 0
                     ? SizedBox(height: 0)
                     : Expanded(
-                        flex: favLength <=3 ? (favLength > 0 ? favLength : 1) : 3,
+                        flex: favLength <= 3
+                            ? (favLength > 0 ? favLength : 1)
+                            : 3,
                         child: RefreshIndicator(
                           onRefresh: () {
                             mySetState(5);
@@ -415,7 +431,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 // Bottom of the page
                 Container(
-                  height: (MediaQuery.of(context).size.height) * (1 / 10),
+                  height: (MediaQuery.of(context).size.height) * (1 / 12),
                   width: MediaQuery.of(context).size.width,
                   color: Colors.blueGrey.shade900,
                   child: Column(
@@ -473,14 +489,29 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  /* Future scan() async {
+  String qrUrl = "";
+  String qrStopCode = "";
+  getStopNo() {
+    String stopNo = "";
+    if (qrUrl.contains("Durak.aspx?p=")) {
+      for (int i = 40; i < qrUrl.length; i++) {
+        stopNo += qrUrl[i];
+      }
+    }
+    setState(() {
+      qrStopCode = stopNo;
+    });
+  }
+
+  Future scanNgo() async {
     try {
       String barcode = await BarcodeScanner.scan();
       setState(() {
         this.barcode = barcode;
         print(this.barcode);
-
-        _launchURL(barcode);
+        qrUrl = this.barcode;
+        getStopNo();
+        //_launchURL(barcode);
       });
     } on PlatformException catch (e) {
       if (e.code == BarcodeScanner.CameraAccessDenied) {
@@ -496,9 +527,9 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       setState(() => this.barcode = 'Unknown error: $e');
     }
-  } */
+  }
 
-  void _launchURL(_url) async => await canLaunch(_url)
+  /* void _launchURL(_url) async => await canLaunch(_url)
       ? await launch(_url)
-      : throw 'Could not launch $_url';
+      : throw 'Could not launch $_url'; */
 }

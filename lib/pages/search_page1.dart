@@ -6,7 +6,6 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/alt_line_detail.dart';
 import 'package:kayseri_ulasim/busDetails/alt_line_detail2.dart';
-import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 
 import 'bus_stop.dart';
 //import http package manually
@@ -84,6 +83,7 @@ class _SearchBar extends State {
           //if searching set background to orange, else set to deep orange
         ),
         body: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Container(
                 alignment: Alignment.center,
                 child: data == null
@@ -105,63 +105,66 @@ class _SearchBar extends State {
       return BusNStop.fromJSON(i);
     }));
     //serilizing json data inside model list.
-    return Column(
-      children: suggestionlist.map((suggestion) {
-        return InkResponse(
-            onTap: () {
-              //when tapped on suggestion
-              print(suggestion.id); //pint student id
-            },
-            child: SizedBox(
-              width: double.infinity, //make 100% width
-              child: ListTile(
-                onTap: () {
-                  if (suggestion.type == "BusStop") {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BusStopPage(
-                                  busStopCode: suggestion.code,
-                                  busStopName: suggestion.name,
-                                )));
-                  } else {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AltLineDetail2(
-                                  suggestion.name,
-                                  suggestion.code,
-                                )));
-                  }
-                },
-                leading: Icon(
-                  suggestion.type == "BusStop"
-                      ? (suggestion.code.length > 5
-                          ? Icons.tram
-                          : Icons.directions_bus)
-                      : suggestion.code.length > 5
-                          ? Icons.tram
-                          : Icons.directions_bus,
-                ),
-                //title: Text(suggestion.name + suggestion.code),
-                title: RichText(
-                    text: TextSpan(
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.black,
+    return SingleChildScrollView(
+      //keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+      child: Column(
+        children: suggestionlist.map((suggestion) {
+          return InkResponse(
+              onTap: () {
+                //when tapped on suggestion
+                print(suggestion.id); //pint student id
+              },
+              child: SizedBox(
+                width: double.infinity, //make 100% width
+                child: ListTile(
+                  onTap: () {
+                    if (suggestion.type == "BusStop") {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BusStopPage(
+                                    busStopCode: suggestion.code,
+                                    busStopName: suggestion.name,
+                                  )));
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AltLineDetail2(
+                                    suggestion.name,
+                                    suggestion.code,
+                                  )));
+                    }
+                  },
+                  leading: Icon(
+                    suggestion.type == "BusStop"
+                        ? (suggestion.code.length > 5
+                            ? Icons.tram
+                            : Icons.directions_bus)
+                        : suggestion.code.length > 5
+                            ? Icons.tram
+                            : Icons.directions_bus,
                   ),
-                  
-                  children: <TextSpan>[
-                    TextSpan(
-                        text: suggestion.code.length >5 ? "" : suggestion.code,
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
-                    TextSpan(text: ' '),
-                    TextSpan(text: suggestion.name),
-                  ],
-                )),
-              ),
-            ));
-      }).toList(),
+                  //title: Text(suggestion.name + suggestion.code),
+                  title: RichText(
+                      text: TextSpan(
+                    style: const TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.black,
+                    ),
+                    
+                    children: <TextSpan>[
+                      TextSpan(
+                          text: suggestion.code.length >5 ? "" : suggestion.code,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(text: ' '),
+                      TextSpan(text: suggestion.name),
+                    ],
+                  )),
+                ),
+              ));
+        }).toList(),
+      ),
     );
   }
 
@@ -169,7 +172,7 @@ class _SearchBar extends State {
     //search input field
     return Container(
         child: TextField(
-      autofocus: false,
+      autofocus: true,
       controller: myController,
       style: TextStyle(color: Colors.white, fontSize: 18),
       decoration: InputDecoration(

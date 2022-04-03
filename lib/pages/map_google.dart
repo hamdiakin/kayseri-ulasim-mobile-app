@@ -218,7 +218,7 @@ class _mapGoogleState extends State<mapGoogle> {
             icon: new Icon(Icons.arrow_back_ios_outlined),
             onPressed: () => Navigator.of(context).pop(),
           ),
-          title: Text('Maps Sampleasjdcnalkscnask'),
+          title: Text('Maps Sample'),
           backgroundColor: Colors.blueGrey.shade900,
         ),
         body: Stack(

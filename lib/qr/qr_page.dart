@@ -1,4 +1,4 @@
-/* import 'package:barcode_scan_fix/barcode_scan.dart';
+import 'package:barcode_scan_fix/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -272,7 +272,7 @@ class _MainPageState extends State<MainPage> {
         setState(() {
           this.barcode = 'The user did not grant the camera permission!';
         });
-      } else {ß
+      } else {
         setState(() => this.barcode = 'Unknown error: $e');
       }
     } on FormatException {
@@ -287,4 +287,4 @@ class _MainPageState extends State<MainPage> {
       ? await launch(_url)
       : throw 'Could not launch $_url';
 }
- */
+ 

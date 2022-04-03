@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:kayseri_ulasim/busDetails/alt_line_detail2.dart';
 import 'package:kayseri_ulasim/busDetails/line_detail.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 
@@ -114,7 +115,7 @@ class _StopTimesState extends State<StopTimes> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => LineDetail(
+                                          builder: (context) => AltLineDetail2(
                                               widget.busStopName,
                                               widget.busLineCode)));
                                 },

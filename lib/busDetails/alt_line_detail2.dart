@@ -39,31 +39,78 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
   }
 
   // For coloring the current location
-  Map<String, dynamic> inStop;
+  List inStop = [];
+  Map<String, dynamic> inStop1;
   List<String> stopList = [];
-  Future<Map<String, dynamic>> getInStops() async {
-    String directionNum;
-    if (direction == "DEPARTURE")
-      directionNum = "1";
-    else
-      directionNum = "2";
-
+  List whereBus = [];
+  Future<List> getInStops() async {
     //get data
-    var response = await http.get(
-        Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/VehiclesInLine?lineCode=$busCode&direction=$directionNum"),
-        headers: {"Accept": "application/json"});
-    this.setState(() {
-      inStop = jsonDecode(response.body);
-    });
-    int x = inStop["vehicles"].length;
-    /*  Map deneme = inStop["vehicles"][0];
-    String propName = deneme["previousStop"]["name"];
-    String propName1 = inStop["vehicles"][0]["previousStop"]["name"]; */
+    if (widget.busCode == "T1" || widget.busCode == "T2") {
+      var response = await http.get(
+          Uri.parse(
+              "http://kaktusmobile.kayseriulasim.com.tr/api/rest/buslines/code/$busCode/buses/direction=$direction"),
+          headers: {"Accept": "application/json"});
+      this.setState(() {
+        inStop = jsonDecode(response.body);
+      });
 
-    for (int i = 0; i < x; i++) {
-      stopList.add(inStop["vehicles"][i]["previousStop"]["name"]);
+      for (int i = 0; i < inStop.length; i++) {
+        if (inStop[i]["buses"].length > 0) {
+          whereBus.add(inStop[i]["buses"][0]["busLocation"]);
+        }
+      }
+    } else {
+      String directionNum;
+      if (direction == "DEPARTURE")
+        directionNum = "1";
+      else
+        directionNum = "2";
+
+      //get data
+      var response = await http.get(
+          Uri.parse(
+              "http://kaktusmobile.kayseriulasim.com.tr/api/VehiclesInLine?lineCode=$busCode&direction=$directionNum"),
+          headers: {"Accept": "application/json"});
+      this.setState(() {
+        inStop1 = jsonDecode(response.body);
+      });
+      int x = inStop1["vehicles"].length;
+
+      for (int i = 0; i < x; i++) {
+        whereBus.add(inStop1["vehicles"][i]["vehicle"]["location"]);
+      }
     }
+
+    double latTar = 0;
+    double longTar = 0;
+    double dist = 0;
+    for (int i = 0; i < whereBus.length; i++) {
+      if (lineDetail == null) {
+        await getBusLine().then((value) => {
+              for (int j = 0; j < value.length; j++)
+                {
+                  dist = calculateDistance(
+                      whereBus[i]["latitude"],
+                      whereBus[i]["longitude"],
+                      lineDetail[j]["stop"]["latitude"],
+                      lineDetail[j]["stop"]["longitude"]),
+                  if (dist < 0.2) stopList.add(lineDetail[j]["stop"]["name"])
+                }
+            });
+      } else {
+        for (int j = 0; j < lineDetail.length; j++) {
+          dist = calculateDistance(
+              whereBus[i]["latitude"],
+              whereBus[i]["longitude"],
+              lineDetail[j]["stop"]["latitude"],
+              lineDetail[j]["stop"]["longitude"]);
+          if (dist < 0.2) {
+            stopList.add(lineDetail[j]["stop"]["name"]);
+          }
+        }
+      }
+    }
+
     return inStop; // all the data about a line
   }
 
@@ -93,7 +140,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
 
     double latTar = 0;
     double longTar = 0;
-    double min = -1;
+    double min = 0;
     if (lineDetail == null) {
       await getBusLine().then((value) => {
             min = calculateDistance(
@@ -124,15 +171,15 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
       }
     }
 
-    if (min_index != -1) {
-      streamControllerScroll.add(5);
-    }
     /* WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {
           indexBlink = min_index;
           nearStop = true;
         })); */
     if (mounted) {
       setState(() {
+        if (min_index != -1) {
+          streamControllerScroll.add(5);
+        }
         indexBlink = min_index;
         nearStop = true;
       });
@@ -232,7 +279,6 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
       });
     }
 
-
     return lineDetailArrival; // all the data about a line
   }
 
@@ -281,6 +327,10 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                   child: Text("$busStopName")))
         ]), // the name of bus got from busStop page
       ),
+      /*  Row(children: [
+          Expanded(
+              child: Text("$busStopName", maxLines: 2, )) */ // these lines makes only two lined titles
+
       body: Column(
         children: [
           Row(
@@ -343,7 +393,11 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => LineInformation(
-                                      busCode, direction, navLat, navLon)));
+                                      busStopName,
+                                      busCode,
+                                      direction,
+                                      navLat,
+                                      navLon)));
                         },
                         child: Container(
                             child: Column(
@@ -460,6 +514,8 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                             setState(() {
                               initialIndex = index;
                               nearStop = false;
+                              whereBus.clear();
+                              stopList.clear();
                             });
                             if (initialIndex == 0) {
                               setState(() {
@@ -474,6 +530,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                                 yeryon = lineDetail.last["stop"]["name"] +
                                     " Direction";
                                 returnNearest();
+                                getInStops();
                               });
                             } else {
                               setState(() {
@@ -488,6 +545,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                                 yeryon = lineDetail.last["stop"]["name"] +
                                     " Direction";
                                 returnNearest();
+                                getInStops();
                               });
                             }
                             //getBusLine();
