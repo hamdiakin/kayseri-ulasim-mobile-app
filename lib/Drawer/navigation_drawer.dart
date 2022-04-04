@@ -1,5 +1,8 @@
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:kayseri_ulasim/controller/language_controller.dart';
+import 'package:provider/src/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'about_kayseri.dart';
 import 'about_kayseri_ulasim.dart';
@@ -20,6 +23,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
   @override
   Widget build(BuildContext context) {
+    context.watch<LanguageController>();
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -27,7 +31,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           createDrawerHeader(),
           createDrawerBodyItem(
             icon: Icons.info,
-            text: 'Card Application',
+            text: 'drawer_card_app'.tr(),
             onTap: () {
               _launchURL();
               /* Navigator.push(
@@ -43,7 +47,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           ),
           createDrawerBodyItem(
             icon: Icons.settings,
-            text: 'Settings',
+            text: 'drawer_settings'.tr(),
             onTap: () {
               Navigator.push(
                   context, MaterialPageRoute(builder: (context) => Settings()));
@@ -51,7 +55,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           ),
           createDrawerBodyItem(
             icon: Icons.help,
-            text: 'Help',
+            text: 'drawer_help'.tr(),
             onTap: () {
               Navigator.push(
                   context,
@@ -67,7 +71,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           ),
           createDrawerBodyItem(
               icon: Icons.bus_alert,
-              text: 'About Kayseri Ulaşım',
+              text: 'drawer_about_comp'.tr(),
               onTap: () {
                 Navigator.push(
                     context,
@@ -76,7 +80,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               }),
           createDrawerBodyItem(
               icon: Icons.history_edu,
-              text: 'About Kayseri',
+              text: 'drawer_about_city'.tr(),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => AboutKayseri()));
@@ -84,25 +88,25 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           Divider(),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Text("İletişim"),
+            child: Text("drawer_connection".tr()),
           ),
           createDrawerBodyItem(
               icon: Icons.contact_page,
-              text: 'Contact Us',
+              text: 'drawer_contact'.tr(),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ContactUs()));
               }),
           createDrawerBodyItem(
               icon: Icons.notifications,
-              text: 'Announcements',
+              text: 'drawer_announcements'.tr(),
               onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => Announcements()));
               }),
           createDrawerBodyItem(
             icon: Icons.text_fields,
-            text: 'Survey',
+            text: 'drawer_survey'.tr(),
             onTap: () {
               Navigator.push(
                   context,
@@ -118,7 +122,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           ),
           createDrawerBodyItem(
             icon: Icons.announcement,
-            text: 'Report an Issue',
+            text: 'drawer_issue'.tr(),
             onTap: () {
               Navigator.push(
                   context,

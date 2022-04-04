@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -88,7 +89,7 @@ class _SearchBar extends State {
                 alignment: Alignment.center,
                 child: data == null
                     ? Container(
-                        padding: EdgeInsets.all(20), child: Text("Type in")
+                        padding: EdgeInsets.all(20), child: Text("search_type".tr())
                         //if is searching then show "Please wait"
                         //else show search text
                         )
@@ -177,7 +178,7 @@ class _SearchBar extends State {
       style: TextStyle(color: Colors.white, fontSize: 18),
       decoration: InputDecoration(
         hintStyle: TextStyle(color: Colors.white, fontSize: 18),
-        hintText: "Line / Stop Search",
+        hintText: "search_search".tr(),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.white, width: 2),
         ), //under line border, set OutlineInputBorder() for all side border

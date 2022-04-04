@@ -2,16 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 //import 'package:barcode_scan_fix/barcode_scan.dart';
 import 'package:barcode_scan_fix/barcode_scan.dart';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/controller/language_controller.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
 import 'package:kayseri_ulasim/pages/map_google.dart';
 import 'package:kayseri_ulasim/pages/bus_stop.dart';
 import 'package:kayseri_ulasim/pages/search_page1.dart';
+import 'package:provider/src/provider.dart';
 
 StreamController<int> streamController = StreamController<int>();
 
@@ -148,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget build(BuildContext context) {
+    context.watch<LanguageController>();
     return MaterialApp(
       home: GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
@@ -217,7 +221,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             color: Colors.white,
                           ),
                           Text(
-                            "Line / Stop Search",
+                            'search_bar_txt'.tr(),
                             style: TextStyle(
                               fontFamily: "Ubuntu",
                               fontSize: 17,
@@ -262,11 +266,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                "No favorites added",
+                                'home_isFav_added'.tr(),
                                 style: TextStyle(color: Colors.white),
                               ),
                             ]))
-                    : Text("Favorites"),
+                    : Text('home_fav'.tr()),
 
                 favLength == 0
                     ? SizedBox(height: 0)
@@ -336,7 +340,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   height: (MediaQuery.of(context).size.height) * (1 / 45),
                 ),
                 // Closest bus stops
-                Text("Closest"),
+                Text('home_closest'.tr()),
                 Expanded(
                   flex: favLength == 0 ? 11 : 4,
                   child: RefreshIndicator(
@@ -460,7 +464,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     },
                                   ),
                                   Text(
-                                    "Map",
+                                    "home_map".tr(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ],

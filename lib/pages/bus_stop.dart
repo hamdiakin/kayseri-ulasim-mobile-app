@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kayseri_ulasim/busDetails/alt_line_detail.dart';
@@ -84,7 +85,7 @@ class _BusStopPageState extends State<BusStopPage> {
         return dummy;
       }
     }
-    return "Please click to see the details of bus lines. ";
+    return "bus_stop_busInfo_msg".tr();
   }
 
   String formatter(String s) {
@@ -110,7 +111,7 @@ class _BusStopPageState extends State<BusStopPage> {
   String getTimetoStop1(String name) {
     for (var i = 0; i < aprLinesData.length; i++) {
       if (aprLinesData[i]["line"]["name"] == name) {
-        return aprLinesData[i]["timeToStop"].toString() + " dk";
+        return aprLinesData[i]["timeToStop"].toString() + "bus_stop_remaining_time".tr();
       }
     }
     return " ";
@@ -201,7 +202,7 @@ class _BusStopPageState extends State<BusStopPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Lines Passing by the Stop",
+                    "bus_stop_passing".tr(),
                     style: TextStyle(fontSize: 15),
                   ),
                 ],
@@ -268,7 +269,7 @@ class _BusStopPageState extends State<BusStopPage> {
                     Icons.bus_alert,
                     color: Colors.white,
                   ),
-                  title: Text("Lines Approaching to the Stop"),
+                  title: Text("bus_stop_approaching".tr()),
                 ),
               ),
               // This part of the screen shows the bus lines that are approaching to the bus stop - approximetly, under, 60 minutes away
@@ -455,7 +456,7 @@ class _BusStopPageState extends State<BusStopPage> {
                                                   : aprLinesData[index]
                                                               ["timeToStop"]
                                                           .toString() +
-                                                      " dk"),
+                                                      "bus_stop_remaining_time".tr()),
                                             ],
                                           ),
                                         ),

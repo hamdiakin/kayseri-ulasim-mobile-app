@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -258,7 +259,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
     }
 
     setState(() {
-      yeryon = lineDetail.last["stop"]["name"] + " Direction";
+      yeryon = lineDetail.last["stop"]["name"] + "line_detail_direction".tr();
     });
     copy = lineDetail;
     return lineDetail; // all the data about a line
@@ -367,7 +368,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                             SizedBox(
                               height: 10.0,
                             ),
-                            Text("Line Detail"),
+                            Text("line_detail_detail".tr()),
                           ],
                         )),
                       ),
@@ -411,7 +412,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                             SizedBox(
                               height: 10.0,
                             ),
-                            Text("Line Information"),
+                            Text("line_detail_information".tr()),
                           ],
                         )),
                       ),
@@ -458,7 +459,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                             SizedBox(
                               height: 10.0,
                             ),
-                            Text("Line Timings"),
+                            Text("line_detail_timings".tr()),
                           ],
                         )),
                       ),
@@ -528,7 +529,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                                   returnNearest();
                                 }); */
                                 yeryon = lineDetail.last["stop"]["name"] +
-                                    " Direction";
+                                    "line_detail_direction".tr();
                                 returnNearest();
                                 getInStops();
                               });
@@ -543,7 +544,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                                   returnNearest();
                                 }); */
                                 yeryon = lineDetail.last["stop"]["name"] +
-                                    " Direction";
+                                   "line_detail_direction".tr();
                                 returnNearest();
                                 getInStops();
                               });
@@ -649,7 +650,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                                                       subtitle: index ==
                                                               indexBlink
                                                           ? Text(
-                                                              "You are close to this stop!")
+                                                              "line_detail_close_msg".tr())
                                                           : Text(""),
                                                     ))
                                               : ListTile(
