@@ -152,8 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget build(BuildContext context) {
     context.watch<LanguageController>();
-    return MaterialApp(
-      home: GestureDetector(
+    return  GestureDetector(
         onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
         child: Scaffold(
           drawer: NavigationDrawer(),
@@ -480,7 +479,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
         ),
-      ),
+      
     );
   }
 

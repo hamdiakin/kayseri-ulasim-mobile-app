@@ -28,5 +28,10 @@
     "bus_stop_passing": "Lines Passing by the Stop",
     "bus_stop_approaching": "Lines Approaching to the Stop",
     "bus_stop_busInfo_msg": "Please click to see the details of bus lines. ",
-    "bus_stop_remaining_time": " min"
+    "bus_stop_remaining_time": " min",
+    "line_detail_timetable" : "Timetable",
+    "timetable_workingdays": "Working Days",
+    "timetable_saturday": "Saturday",
+    "timetable_sunday": "Sunday/Holiday",
+    "timetable_direction": " Direction"
 }

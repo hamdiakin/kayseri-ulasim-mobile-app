@@ -211,84 +211,82 @@ class _mapGoogleState extends State<mapGoogle> {
   }
 
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          leading: new IconButton(
-            icon: new Icon(Icons.arrow_back_ios_outlined),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text('Maps Sample'),
-          backgroundColor: Colors.blueGrey.shade900,
+    return Scaffold(
+      appBar: AppBar(
+        leading: new IconButton(
+          icon: new Icon(Icons.arrow_back_ios_outlined),
+          onPressed: () => Navigator.of(context).pop(),
         ),
-        body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              zoomControlsEnabled: true,
-              mapToolbarEnabled: false,
-              minMaxZoomPreference: MinMaxZoomPreference(2, 17),
-              onCameraMove: (CameraPosition position) {
-                print(position.zoom);
-                if (position.zoom < 14) {
-                  setState(() {
-                    markersList.clear();
-                  });
-                  if (markersList.isEmpty && (isSend == false)) {
-                    launched--;
-                    print("launched is: " + launched.toString());
-                    if (launched < 0)
-                      showMessage(
-                          "Please zoom in to be able to see the stops!", 3);
-                    /* ToastUtils.showCustomToast(context, "Zoom in to see the spots"); */
-                    isSend = true;
-                  }
-                } else {
-                  updateFunction(position);
-                  isSend = false;
+        title: Text('Maps Sample'),
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            myLocationEnabled: true,
+            myLocationButtonEnabled: true,
+            zoomControlsEnabled: true,
+            mapToolbarEnabled: false,
+            minMaxZoomPreference: MinMaxZoomPreference(2, 17),
+            onCameraMove: (CameraPosition position) {
+              print(position.zoom);
+              if (position.zoom < 14) {
+                setState(() {
+                  markersList.clear();
+                });
+                if (markersList.isEmpty && (isSend == false)) {
+                  launched--;
+                  print("launched is: " + launched.toString());
+                  if (launched < 0)
+                    showMessage(
+                        "Please zoom in to be able to see the stops!", 3);
+                  /* ToastUtils.showCustomToast(context, "Zoom in to see the spots"); */
+                  isSend = true;
                 }
-              },
-              onMapCreated: _onMapCreated,
-              markers: markersList,
-              initialCameraPosition: _initialLocation,
-            ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
-                  child: ClipOval(
-                    child: Material(
-                      color: Colors.orange.shade100, // button color
-                      child: InkWell(
-                        splashColor: Colors.orange, // inkwell color
-                        child: SizedBox(
-                          width: 56,
-                          height: 56,
-                          child: Icon(Icons.my_location),
-                        ),
-                        onTap: () {
-                          mapController.animateCamera(
-                            CameraUpdate.newCameraPosition(
-                              CameraPosition(
-                                target: LatLng(
-                                  _currentPosition.latitude,
-                                  _currentPosition.longitude,
-                                ),
-                                zoom: 17.0,
-                              ),
-                            ),
-                          );
-                        },
+              } else {
+                updateFunction(position);
+                isSend = false;
+              }
+            },
+            onMapCreated: _onMapCreated,
+            markers: markersList,
+            initialCameraPosition: _initialLocation,
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
+                child: ClipOval(
+                  child: Material(
+                    color: Colors.orange.shade100, // button color
+                    child: InkWell(
+                      splashColor: Colors.orange, // inkwell color
+                      child: SizedBox(
+                        width: 56,
+                        height: 56,
+                        child: Icon(Icons.my_location),
                       ),
+                      onTap: () {
+                        mapController.animateCamera(
+                          CameraUpdate.newCameraPosition(
+                            CameraPosition(
+                              target: LatLng(
+                                _currentPosition.latitude,
+                                _currentPosition.longitude,
+                              ),
+                              zoom: 17.0,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

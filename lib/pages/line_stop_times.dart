@@ -48,86 +48,83 @@ class _StopTimesState extends State<StopTimes> {
   @override
   Widget build(BuildContext context) {
     timeData = getData();
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey.shade900,
-          leading: IconButton(
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey.shade900,
+        leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context)
-          ),
-          title: Text(
-            widget.busName,
-            style: TextStyle(fontSize: 15),
-          ),
-          centerTitle: true,
+            onPressed: () => Navigator.pop(context)),
+        title: Text(
+          widget.busName,
+          style: TextStyle(fontSize: 15),
         ),
-        body: Center(
-          child: Container(
-            child: FutureBuilder<List>(
-              future: timeData,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            side: BorderSide(
-                              color: Colors.grey,
-                              width: 1,
-                            ),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Container(
+          child: FutureBuilder<List>(
+            future: timeData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          side: BorderSide(
+                            color: Colors.grey,
+                            width: 1,
                           ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              ListTile(
-                                title: Text.rich(
-                                  TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: snapshot.data[index]["line"]
-                                                ["code"] +
-                                            " ",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      TextSpan(
-                                        text: snapshot.data[index]["line"]
-                                                ["name"] +
-                                            "\n",
-                                      ),
-                                    ],
-                                  ),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text.rich(
+                                TextSpan(
+                                  children: [
+                                    TextSpan(
+                                      text: snapshot.data[index]["line"]
+                                              ["code"] +
+                                          " ",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    TextSpan(
+                                      text: snapshot.data[index]["line"]
+                                              ["name"] +
+                                          "\n",
+                                    ),
+                                  ],
                                 ),
-                                subtitle: Text(snapshot.data[index]["doorNo"]),
-                                trailing: Container(
-                                  child: Text(
-                                    snapshot.data[index]["timeToStop"]
-                                        .toString()
-                                        .substring(0, 5),
-                                    textAlign: TextAlign.end,
-                                  ),
-                                ),
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => AltLineDetail2(
-                                              widget.busStopName,
-                                              widget.busLineCode)));
-                                },
                               ),
-                            ],
-                          ),
-                        );
-                      });
-                }
-                return CircularProgressIndicator();
-              },
-            ),
+                              subtitle: Text(snapshot.data[index]["doorNo"]),
+                              trailing: Container(
+                                child: Text(
+                                  snapshot.data[index]["timeToStop"]
+                                      .toString()
+                                      .substring(0, 5),
+                                  textAlign: TextAlign.end,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => AltLineDetail2(
+                                            widget.busStopName,
+                                            widget.busLineCode)));
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              }
+              return CircularProgressIndicator();
+            },
           ),
         ),
       ),

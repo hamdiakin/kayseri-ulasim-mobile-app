@@ -28,5 +28,10 @@
     "bus_stop_passing": "Duraktan Geçen Hatlar",
     "bus_stop_approaching": "Durağa Yaklaşan Hatlar",
     "bus_stop_busInfo_msg": "Hattın duraktan geçiş saatleri için tıklayınız. ",
-    "bus_stop_remaining_time": " dk"
+    "bus_stop_remaining_time": " dk",
+    "line_detail_timetable" : "Sefer Saatleri",
+    "timetable_workingdays": "Hafta İçi",
+    "timetable_saturday": "Cumartesi",
+    "timetable_sunday": "Pazar/Tatil",
+    "timetable_direction": " Yönüne Gidiş"
 }

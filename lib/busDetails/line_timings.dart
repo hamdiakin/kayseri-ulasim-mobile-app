@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,7 @@ class _LineTimingsState extends State<LineTimings> {
   String busCode;
   String firstStation; //if departure, show first station
   String lastStation; // if arrival, show last station
-  bool decidedStation = true; //decide if arrival or departure direction
+  bool decidedStation = false; //decide if arrival or departure direction
 
   List<dynamic> lineTimes; //get data into list
 
@@ -53,7 +54,7 @@ class _LineTimingsState extends State<LineTimings> {
   Widget build(BuildContext context) {
     getStationName() {
       //method for showing first or last station
-      if (decidedStation == true) {
+      if (decidedStation == false) {
         return firstStation;
       } else {
         return lastStation;
@@ -62,7 +63,9 @@ class _LineTimingsState extends State<LineTimings> {
 
     return WillPopScope(
       //put customized back arrow
-      onWillPop: () async => false, //don't let the system pop automatically
+      onWillPop: () async {
+        return true;
+      }, //don't let the system pop automatically
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: PreferredSize(
@@ -76,7 +79,7 @@ class _LineTimingsState extends State<LineTimings> {
               icon: new Icon(Icons.arrow_back_ios_outlined),
               onPressed: () => Navigator.of(context).pop(),
             ),
-            title: Text("Timetable"),
+            title: Text("line_detail_timetable".tr()),
             actions: [
               /* Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -136,17 +139,17 @@ class _LineTimingsState extends State<LineTimings> {
                       textAlign: TextAlign.center,
                     )),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 1/60,
+                      height: MediaQuery.of(context).size.height * 1 / 60,
                     ),
                     Center(
                       child: Text(
-                        getStationName(),
+                        getStationName() + "timetable_direction".tr(),
                         style: TextStyle(fontSize: 15.0, color: Colors.blue),
                         textAlign: TextAlign.center,
                       ),
                     ),
                     SizedBox(
-                      height: MediaQuery.of(context).size.height * 1/50,
+                      height: MediaQuery.of(context).size.height * 1 / 50,
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -157,7 +160,7 @@ class _LineTimingsState extends State<LineTimings> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                "Working Days",
+                                "timetable_workingdays".tr(),
                                 style: TextStyle(fontSize: 15.0),
                               ),
                               Container(
@@ -171,8 +174,9 @@ class _LineTimingsState extends State<LineTimings> {
                                       return ListView.builder(
                                           itemCount: snapshot.data
                                               .length, //set the length to hole data length
-                                          itemBuilder: (BuildContext ctx, index) {
-                                            return decidedStation == true
+                                          itemBuilder:
+                                              (BuildContext ctx, index) {
+                                            return decidedStation == false
                                                 ? //if the direction decided by USER is DEPARTURE
                                                 snapshot.data[index][
                                                                 "direction"] == //if the direction is DEPARTURE
@@ -187,24 +191,27 @@ class _LineTimingsState extends State<LineTimings> {
                                                                   .all(8.0),
                                                           child: Column(
                                                             children: <Widget>[
-                                                              Text(snapshot
-                                                                      .data[index]
-                                                                  ["time"]),
+                                                              Text(
+                                                                  snapshot.data[
+                                                                          index]
+                                                                      ["time"]),
                                                             ],
                                                           ),
                                                         ),
-                                                        shadowColor: Colors.grey)
+                                                        shadowColor:
+                                                            Colors.grey)
                                                     : SizedBox(
                                                         height: 0.0,
                                                         width: 0.0,
                                                       )
-                                                : decidedStation == false
+                                                : decidedStation == true
                                                     ? //if the direction decided by USER is ARRIVAL
                                                     snapshot.data[index][
                                                                     "direction"] == //if the direction is ARRIVAL
                                                                 "ARRIVAL" &&
                                                             snapshot.data[index]
-                                                                    ["dayType"] ==
+                                                                    [
+                                                                    "dayType"] ==
                                                                 "WORKDAY"
                                                         ? Card(
                                                             child: Padding(
@@ -246,7 +253,7 @@ class _LineTimingsState extends State<LineTimings> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                "Saturday", //for SATURDAY column
+                                "timetable_saturday".tr(), //for SATURDAY column
                                 style: TextStyle(fontSize: 15.0),
                               ),
                               Container(
@@ -259,8 +266,9 @@ class _LineTimingsState extends State<LineTimings> {
                                     if (snapshot.hasData) {
                                       return ListView.builder(
                                           itemCount: snapshot.data.length,
-                                          itemBuilder: (BuildContext ctx, index) {
-                                            return decidedStation == true
+                                          itemBuilder:
+                                              (BuildContext ctx, index) {
+                                            return decidedStation == false
                                                 ? (snapshot.data[index]
                                                                 ["direction"] ==
                                                             "DEPARTURE" &&
@@ -274,23 +282,26 @@ class _LineTimingsState extends State<LineTimings> {
                                                                   .all(8.0),
                                                           child: Column(
                                                             children: <Widget>[
-                                                              Text(snapshot
-                                                                      .data[index]
-                                                                  ["time"]),
+                                                              Text(
+                                                                  snapshot.data[
+                                                                          index]
+                                                                      ["time"]),
                                                             ],
                                                           ),
                                                         ),
-                                                        shadowColor: Colors.grey)
+                                                        shadowColor:
+                                                            Colors.grey)
                                                     : SizedBox(
                                                         height: 0.0,
                                                         width: 0.0,
                                                       ))
-                                                : decidedStation == false
+                                                : decidedStation == true
                                                     ? snapshot.data[index][
                                                                     "direction"] ==
                                                                 "ARRIVAL" &&
                                                             snapshot.data[index]
-                                                                    ["dayType"] ==
+                                                                    [
+                                                                    "dayType"] ==
                                                                 "SATURDAY"
                                                         ? Card(
                                                             child: Padding(
@@ -332,7 +343,7 @@ class _LineTimingsState extends State<LineTimings> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                "Sunday/Holiday", //For SUNDAY column
+                                "timetable_sunday".tr(), //For SUNDAY column
                                 style: TextStyle(fontSize: 15.0),
                               ),
                               Container(
@@ -345,8 +356,9 @@ class _LineTimingsState extends State<LineTimings> {
                                     if (snapshot.hasData) {
                                       return ListView.builder(
                                           itemCount: snapshot.data.length,
-                                          itemBuilder: (BuildContext ctx, index) {
-                                            return decidedStation == true
+                                          itemBuilder:
+                                              (BuildContext ctx, index) {
+                                            return decidedStation == false
                                                 ? snapshot.data[index]
                                                                 ["direction"] ==
                                                             "DEPARTURE" &&
@@ -360,23 +372,26 @@ class _LineTimingsState extends State<LineTimings> {
                                                                   .all(8.0),
                                                           child: Column(
                                                             children: <Widget>[
-                                                              Text(snapshot
-                                                                      .data[index]
-                                                                  ["time"]),
+                                                              Text(
+                                                                  snapshot.data[
+                                                                          index]
+                                                                      ["time"]),
                                                             ],
                                                           ),
                                                         ),
-                                                        shadowColor: Colors.grey)
+                                                        shadowColor:
+                                                            Colors.grey)
                                                     : SizedBox(
                                                         height: 0.0,
                                                         width: 0.0,
                                                       )
-                                                : decidedStation == false
+                                                : decidedStation == true
                                                     ? snapshot.data[index][
                                                                     "direction"] ==
                                                                 "ARRIVAL" &&
                                                             snapshot.data[index]
-                                                                    ["dayType"] ==
+                                                                    [
+                                                                    "dayType"] ==
                                                                 "SUNDAY"
                                                         ? Card(
                                                             child: Padding(
@@ -420,34 +435,31 @@ class _LineTimingsState extends State<LineTimings> {
               SizedBox(
                 height: 15,
               ),
-                
               RollingSwitch.icon(
                 onChanged: (bool state) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (state) {
-                        setState(() {
-                          decidedStation = false;
-                        });
-                      } else {
-                        setState(() {
-                          decidedStation = true;
-                        });
-                      }
-                    });
+                    if (state) {
+                      setState(() {
+                        decidedStation = true;
+                      });
+                    } else {
+                      setState(() {
+                        decidedStation = false;
+                      });
+                    }
+                  });
                 },
-                rollingInfoRight: const RollingIconInfo(
+                rollingInfoRight: RollingIconInfo(
                   icon: Icons.arrow_forward_rounded,
-                  text: Text('Departure'),
+                  text: Text("Departure"),
                 ),
-                rollingInfoLeft: const RollingIconInfo(
+                rollingInfoLeft: RollingIconInfo(
                   icon: Icons.arrow_back_rounded,
                   backgroundColor: Colors.grey,
-                  text: Text('Arrival'),
+                  text: Text("Arrival"),
                 ),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 1/40
-              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
               /* Center(
                 child: LiteRollingSwitch(
                   //initial value
@@ -477,7 +489,7 @@ class _LineTimingsState extends State<LineTimings> {
                   },
                 ),
               ), */
-                
+
               /* Container(
                   /* width: MediaQuery.of(context).size.width * 5 /20,
                   height: MediaQuery.of(context).size.height * 3 / 20, */

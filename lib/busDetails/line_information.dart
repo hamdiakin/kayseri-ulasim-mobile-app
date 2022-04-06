@@ -248,7 +248,7 @@ class _LineInformationState extends State<LineInformation> {
         "Live",
         pinLocationIconLive,
         context,
-        id: MarkerId((index - liveLoc.length).toString()),
+        id: MarkerId((index).toString()),
         lat: element["latitude"],
         lng: element["longitude"],
       );
@@ -290,7 +290,8 @@ class _LineInformationState extends State<LineInformation> {
 
   BitmapDescriptor pinLocationIcon;
   BitmapDescriptor pinLocationIconLive;
-
+  
+  Timer _clockTimer;
   @override
   void initState() {
     super.initState();
@@ -309,7 +310,7 @@ class _LineInformationState extends State<LineInformation> {
         .then((onValue) {
       pinLocationIconLive = onValue;
     });
-      new Timer.periodic(
+      _clockTimer = Timer.periodic(
           Duration(seconds: 5),
           (Timer t) => setState(() {
                 //markersList.removeWhere((element) => element.code == "Live");
@@ -319,6 +320,12 @@ class _LineInformationState extends State<LineInformation> {
 
     //locationGetter();
     getBusLine();
+  }
+
+  @override
+  void dispose() {
+    _clockTimer.cancel();
+    super.dispose();
   }
 
   Widget build(BuildContext context) {

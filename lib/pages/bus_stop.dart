@@ -111,7 +111,8 @@ class _BusStopPageState extends State<BusStopPage> {
   String getTimetoStop1(String name) {
     for (var i = 0; i < aprLinesData.length; i++) {
       if (aprLinesData[i]["line"]["name"] == name) {
-        return aprLinesData[i]["timeToStop"].toString() + "bus_stop_remaining_time".tr();
+        return aprLinesData[i]["timeToStop"].toString() +
+            "bus_stop_remaining_time".tr();
       }
     }
     return " ";
@@ -152,336 +153,337 @@ class _BusStopPageState extends State<BusStopPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          leading: new IconButton(
-              icon: new Icon(Icons.arrow_back_ios_outlined),
-              onPressed: () => Navigator.pop(context)),
-          title: Row(children: [
+    return Scaffold(
+      appBar: AppBar(
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back_ios_outlined),
+            onPressed: () => Navigator.pop(context)),
+        title: Row(children: [
           Expanded(
               child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Text(widget.busStopName)))
         ]),
-          actions: <Widget>[
-            IconButton(
-              icon: check == true
-                  ? Icon(
-                      Icons.star,
-                      color: Colors.yellowAccent,
-                    )
-                  : Icon(
-                      Icons.star_border,
-                      color: Colors.yellowAccent,
-                    ),
-              onPressed: () {
-                inCheck();
-                if (check) {
-                  dbHelper.delete1(widget.busStopName);
-                  //streamController.add(5);
-                } else {
-                  _insert(widget.busStopName, widget.busStopCode);
-                  streamController.add(5);
-                }
-
-                _query();
-                inCheck();
-              },
-            )
-          ],
-          backgroundColor: Colors.blueGrey.shade900,
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "bus_stop_passing".tr(),
-                    style: TextStyle(fontSize: 15),
+        actions: <Widget>[
+          IconButton(
+            icon: check == true
+                ? Icon(
+                    Icons.star,
+                    color: Colors.yellowAccent,
+                  )
+                : Icon(
+                    Icons.star_border,
+                    color: Colors.yellowAccent,
                   ),
-                ],
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              // This part of the screen shows the lines passing through the bus stop
-              Expanded(
-                flex: 1,
-                child: SizedBox(
-                  child: FutureBuilder<List>(
-                    future: busLineData,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return GridView.builder(
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 4,
-                                    childAspectRatio: 6 / 2,
-                                    crossAxisSpacing: 7,
-                                    mainAxisSpacing: 17),
-                            itemCount: busLinesData.length,
-                            itemBuilder: (BuildContext ctx, index) {
-                              return InkWell(
-                                onTap: () {
-                                  setState(() {
-                                    _changeSelection(
-                                        index: index,
-                                        code: snapshot.data[index]["code"]);
-                                  });
-                                  // To show which lines are included to "selectedIndexes"
-                                  /* for (var i = 0;
+            onPressed: () {
+              inCheck();
+              if (check) {
+                dbHelper.delete1(widget.busStopName);
+                //streamController.add(5);
+              } else {
+                _insert(widget.busStopName, widget.busStopCode);
+                streamController.add(5);
+              }
+
+              _query();
+              inCheck();
+            },
+          )
+        ],
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "bus_stop_passing".tr(),
+                  style: TextStyle(fontSize: 15),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            // This part of the screen shows the lines passing through the bus stop
+            Expanded(
+              flex: 1,
+              child: SizedBox(
+                child: FutureBuilder<List>(
+                  future: busLineData,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4,
+                                  childAspectRatio: 6 / 2,
+                                  crossAxisSpacing: 7,
+                                  mainAxisSpacing: 17),
+                          itemCount: busLinesData.length,
+                          itemBuilder: (BuildContext ctx, index) {
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _changeSelection(
+                                      index: index,
+                                      code: snapshot.data[index]["code"]);
+                                });
+                                // To show which lines are included to "selectedIndexes"
+                                /* for (var i = 0;
                                       i < _selectedCodeList.length;
                                       i++) {
                                     print(_selectedCodeList[i]);
                                   } */
-                                },
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  child: Text(snapshot.data[index]["code"]),
-                                  decoration: BoxDecoration(
-                                      color: _selectedCodeList.contains(
-                                              snapshot.data[index]["code"])
-                                          ? Colors.grey[500]
-                                          : Colors.grey[200],
-                                      borderRadius: BorderRadius.circular(6)),
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: Text(snapshot.data[index]["code"]),
+                                decoration: BoxDecoration(
+                                    color: _selectedCodeList.contains(
+                                            snapshot.data[index]["code"])
+                                        ? Colors.grey[500]
+                                        : Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(6)),
+                              ),
+                            );
+                          });
+                    }
+                    return Text(
+                      "", // can be written as error
+                      style: TextStyle(color: Colors.white),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Container(
+              color: Colors.blue,
+              child: ListTile(
+                leading: Icon(
+                  Icons.bus_alert,
+                  color: Colors.white,
+                ),
+                title: Text("bus_stop_approaching".tr()),
+              ),
+            ),
+            // This part of the screen shows the bus lines that are approaching to the bus stop - approximetly, under, 60 minutes away
+            Expanded(
+              flex: 2,
+              child: SizedBox(
+                child: RefreshIndicator(
+                  onRefresh: () {
+                    setState(() {
+                      aprLineData = aprBusLines();
+                    });
+                    CircularProgressIndicator();
+                    return Future.value(true);
+                  },
+                  child: FutureBuilder<List>(
+                    // When the selectionState changes the items that will be shown are also going to change
+                    future: selectionState == true ? fAprLines : aprLineData,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return ListView.builder(
+                          // Changes with selectionState information
+                          itemCount: selectionState == true
+                              ? _selectedIndexList1.length
+                              : aprLinesData.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return Column(
+                              children: [
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(10),
+                                        topRight: Radius.circular(10)),
+                                  ),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      ListTile(
+                                        onTap: () {
+                                          selectionState == true
+                                              ? Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          StopTimes(
+                                                            busName: busLinesData[
+                                                                _selectedIndexList1[
+                                                                    index]]["name"],
+                                                            busLineCode: busLinesData[
+                                                                _selectedIndexList1[
+                                                                    index]]["code"],
+                                                            busStopCode: widget
+                                                                .busStopCode,
+                                                            busStopName: widget
+                                                                .busStopName,
+                                                          )))
+                                              : Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AltLineDetail2(
+                                                              "${aprLinesData[index]["line"]["name"]}",
+                                                              "${aprLinesData[index]["line"]["code"]}")));
+                                        },
+                                        leading: widget.busStopCode.length > 5
+                                            ? Icon(
+                                                Icons.tram,
+                                                color: Colors.red,
+                                              )
+                                            : Icon(
+                                                Icons.directions_bus,
+                                                color: Colors.blue.shade700,
+                                              ),
+                                        title: selectionState == true
+                                            ? (RichText(
+                                                text: TextSpan(
+                                                    style: const TextStyle(
+                                                      fontSize: 14.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                          text: busLinesData[
+                                                                  _selectedIndexList1[
+                                                                      index]]
+                                                              ["code"],
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextSpan(text: " "),
+                                                      TextSpan(
+                                                          text: busLinesData[
+                                                              _selectedIndexList1[
+                                                                  index]]["name"])
+                                                    ]),
+                                              ))
+                                            : RichText(
+                                                text: TextSpan(
+                                                    style: const TextStyle(
+                                                      fontSize: 14.0,
+                                                      color: Colors.black,
+                                                    ),
+                                                    children: <TextSpan>[
+                                                      TextSpan(
+                                                          text: aprLinesData[
+                                                                  index]["line"]
+                                                              ["code"],
+                                                          style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextSpan(text: " "),
+                                                      TextSpan(
+                                                          text: aprLinesData[
+                                                                  index]["line"]
+                                                              ["name"])
+                                                    ]),
+                                              ),
+                                        subtitle: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Expanded(
+                                              child: Text(selectionState == true
+                                                  ? getTimetoStop(busLinesData[
+                                                      _selectedIndexList1[
+                                                          index]]["name"])
+                                                  : formatter(
+                                                          aprLinesData[index]
+                                                              ["doorNo"]) +
+                                                      " "),
+                                            ),
+                                          ],
+                                        ),
+                                        trailing: Column(
+                                          children: [
+                                            SizedBox(
+                                              height: 30.0,
+                                              width: 60.0,
+                                              child: IconButton(
+                                                  padding:
+                                                      new EdgeInsets.all(0.0),
+                                                  onPressed: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    StopTimes(
+                                                                      busName: selectionState ==
+                                                                              true
+                                                                          ? busLinesData[_selectedIndexList1[index]]
+                                                                              [
+                                                                              "name"]
+                                                                          : aprLinesData[index]["line"]
+                                                                              [
+                                                                              "name"],
+                                                                      busLineCode: selectionState ==
+                                                                              true
+                                                                          ? busLinesData[_selectedIndexList1[index]]
+                                                                              [
+                                                                              "code"]
+                                                                          : aprLinesData[index]["line"]
+                                                                              [
+                                                                              "code"],
+                                                                      busStopCode:
+                                                                          widget
+                                                                              .busStopCode,
+                                                                      busStopName:
+                                                                          widget
+                                                                              .busStopName,
+                                                                    )));
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.access_alarm_outlined,
+                                                    color: Colors.blue.shade700,
+                                                  )),
+                                            ),
+                                            SizedBox(
+                                              height: 2,
+                                            ),
+                                            Text(selectionState == true
+                                                ? getTimetoStop1(busLinesData[
+                                                    _selectedIndexList1[
+                                                        index]]["name"])
+                                                : aprLinesData[index]
+                                                            ["timeToStop"]
+                                                        .toString() +
+                                                    "bus_stop_remaining_time"
+                                                        .tr()),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              );
-                            });
+                              ],
+                            );
+                          },
+                        );
                       }
-                      return Text(
-                        "", // can be written as error
-                        style: TextStyle(color: Colors.white),
+                      //return Text("error");
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          LinearProgressIndicator(),
+                        ],
                       );
                     },
                   ),
                 ),
               ),
-              Container(
-                color: Colors.blue,
-                child: ListTile(
-                  leading: Icon(
-                    Icons.bus_alert,
-                    color: Colors.white,
-                  ),
-                  title: Text("bus_stop_approaching".tr()),
-                ),
-              ),
-              // This part of the screen shows the bus lines that are approaching to the bus stop - approximetly, under, 60 minutes away
-              Expanded(
-                flex: 2,
-                child: SizedBox(
-                  child: RefreshIndicator(
-                    onRefresh: () {
-                      setState(() {
-                        aprLineData = aprBusLines();
-                      });
-                      CircularProgressIndicator();
-                      return Future.value(true);
-                    },
-                    child: FutureBuilder<List>(
-                      // When the selectionState changes the items that will be shown are also going to change
-                      future: selectionState == true ? fAprLines : aprLineData,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return ListView.builder(
-                            // Changes with selectionState information
-                            itemCount: selectionState == true
-                                ? _selectedIndexList1.length
-                                : aprLinesData.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return Column(
-                                children: [
-                                  Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.only(
-                                          bottomRight: Radius.circular(10),
-                                          topRight: Radius.circular(10)),
-                                    ),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        ListTile(
-                                          onTap: () {
-                                            selectionState == true
-                                                ? Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            StopTimes(
-                                                              busName: busLinesData[
-                                                                      _selectedIndexList1[
-                                                                          index]]
-                                                                  ["name"],
-                                                              busLineCode: busLinesData[
-                                                                      _selectedIndexList1[
-                                                                          index]]
-                                                                  ["code"],
-                                                              busStopCode: widget
-                                                                  .busStopCode,
-                                                              busStopName: widget
-                                                                  .busStopName,
-                                                            )))
-                                                : Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            AltLineDetail2(
-                                                                "${aprLinesData[index]["line"]["name"]}",
-                                                                "${aprLinesData[index]["line"]["code"]}")));
-                                          },
-                                          leading: widget.busStopCode.length > 5
-                                              ? Icon(
-                                                  Icons.tram,
-                                                  color: Colors.red,
-                                                )
-                                              : Icon(
-                                                  Icons.directions_bus,
-                                                  color: Colors.blue.shade700,
-                                                ),
-                                          title: selectionState == true
-                                              ? (RichText(
-                                                  text: TextSpan(
-                                                      style: const TextStyle(
-                                                        fontSize: 14.0,
-                                                        color: Colors.black,
-                                                      ),
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text: busLinesData[
-                                                                    _selectedIndexList1[
-                                                                        index]]
-                                                                ["code"],
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold)),
-                                                        TextSpan(text: " "),
-                                                        TextSpan(
-                                                            text: busLinesData[
-                                                                _selectedIndexList1[
-                                                                    index]]["name"])
-                                                      ]),
-                                                ))
-                                              : RichText(
-                                                  text: TextSpan(
-                                                      style: const TextStyle(
-                                                        fontSize: 14.0,
-                                                        color: Colors.black,
-                                                      ),
-                                                      children: <TextSpan>[
-                                                        TextSpan(
-                                                            text: aprLinesData[
-                                                                        index]
-                                                                    ["line"]
-                                                                ["code"],
-                                                            style: TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold)),
-                                                        TextSpan(text: " "),
-                                                        TextSpan(
-                                                            text: aprLinesData[
-                                                                        index]
-                                                                    ["line"]
-                                                                ["name"])
-                                                      ]),
-                                                ),
-                                          subtitle: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Expanded(
-                                                child: Text(selectionState ==
-                                                        true
-                                                    ? getTimetoStop(
-                                                        busLinesData[
-                                                            _selectedIndexList1[
-                                                                index]]["name"])
-                                                    : formatter(
-                                                            aprLinesData[index]
-                                                                ["doorNo"]) +
-                                                        " "),
-                                              ),
-                                            ],
-                                          ),
-                                          trailing: Column(
-                                            children: [
-                                              SizedBox(
-                                                height: 30.0,
-                                                width: 60.0,
-                                                child: IconButton(
-                                                    padding:
-                                                        new EdgeInsets.all(0.0),
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder:
-                                                                  (context) =>
-                                                                      StopTimes(
-                                                                        busName: selectionState ==
-                                                                                true
-                                                                            ? busLinesData[_selectedIndexList1[index]]["name"]
-                                                                            : aprLinesData[index]["line"]["name"],
-                                                                        busLineCode: selectionState ==
-                                                                                true
-                                                                            ? busLinesData[_selectedIndexList1[index]]["code"]
-                                                                            : aprLinesData[index]["line"]["code"],
-                                                                        busStopCode:
-                                                                            widget.busStopCode,
-                                                                        busStopName:
-                                                                            widget.busStopName,
-                                                                      )));
-                                                    },
-                                                    icon: Icon(
-                                                      Icons
-                                                          .access_alarm_outlined,
-                                                      color:
-                                                          Colors.blue.shade700,
-                                                    )),
-                                              ),
-                                              SizedBox(
-                                                height: 2,
-                                              ),
-                                              Text(selectionState == true
-                                                  ? getTimetoStop1(busLinesData[
-                                                      _selectedIndexList1[
-                                                          index]]["name"])
-                                                  : aprLinesData[index]
-                                                              ["timeToStop"]
-                                                          .toString() +
-                                                      "bus_stop_remaining_time".tr()),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        }
-                        //return Text("error");
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            LinearProgressIndicator(),
-                          ],
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
