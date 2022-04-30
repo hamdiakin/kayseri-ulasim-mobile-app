@@ -16,7 +16,7 @@ class NavigationDrawer extends StatefulWidget {
 }
 
 class _NavigationDrawerState extends State<NavigationDrawer> {
-  String _url = "https://www.kayseriulasim.com/kartbasvurusu";
+  String _url = "https://www.kart38.com";
   void _launchURL() async {
     if (!await launch(_url)) throw 'Could not launch $_url';
   }
@@ -64,7 +64,9 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                             url:
                                 "https://www.kayseriulasim.com/tr/kayseri-ulasim/sss/kart38-sikca-sorulanlar",
                             appBar: new AppBar(
-                              title: Text("Help"),
+                              title: Text(
+                                'drawer_help'.tr(),
+                              ),
                             ),
                           )));
             },
@@ -115,7 +117,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                             url:
                                 "https://www.kayseriulasim.com/tr/kayseri-ulasim/iletisim/musteri-memnuniyet-anketi",
                             appBar: new AppBar(
-                              title: Text("Survey"),
+                              title: Text('drawer_survey'.tr(),),
                             ),
                           )));
             },
@@ -130,7 +132,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       builder: (context) => new WebviewScaffold(
                             url: "https://www.kayseriulasim.com/iletisim-formu",
                             appBar: new AppBar(
-                              title: Text("Report an Issue"),
+                              title: Text('drawer_issue'.tr()),
                             ),
                           )));
             },

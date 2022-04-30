@@ -4,6 +4,7 @@
     "home_fav": "Favorites",
     "home_isFav_added": "No favorites added",
     "home_map": "Map",
+    "home_no_stop": "There are no available stops near your location.",
     "drawer_card_app": "Card Application",
     "drawer_settings": "Settings",
     "drawer_help": "Help",
@@ -12,6 +13,7 @@
     "drawer_connection": "Contact Us",
     "drawer_contact": "Contuct Us",
     "drawer_announcements": "Announcements",
+    "drawer_announcements_content": "This is Announcements Page.",
     "drawer_survey": "Survey",
     "drawer_issue": "Report an Issue",
     "drawer_pick_lang:": "Pick up a Language",
@@ -29,9 +31,13 @@
     "bus_stop_approaching": "Lines Approaching to the Stop",
     "bus_stop_busInfo_msg": "Please click to see the details of bus lines. ",
     "bus_stop_remaining_time": " min",
+    "bus_stop_no_vehicle": "There are no vehicles approaching the stop.",
+    "bus_stop_no_line": "There is no line defined to the station.",
     "line_detail_timetable" : "Timetable",
     "timetable_workingdays": "Working Days",
     "timetable_saturday": "Saturday",
     "timetable_sunday": "Sunday/Holiday",
-    "timetable_direction": " Direction"
+    "timetable_direction": " Direction",
+    "line_stop_times_no_data": "There is no active time service on this line.",
+    "maps_title": "Map Sample"
 }

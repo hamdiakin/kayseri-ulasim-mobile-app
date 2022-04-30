@@ -4,6 +4,7 @@
     "home_fav": "Favorilerim",
     "home_isFav_added": "Favori Eklenmedi",
     "home_map": "Harita",
+    "home_no_stop": "Yakınınızda mevcut durak bulunmamaktardır.",
     "drawer_card_app": "Ulaşım Kartı Başvurusu",
     "drawer_settings": "Ayarlar",
     "drawer_help": "Yardım",
@@ -12,6 +13,7 @@
     "drawer_connection": "İletişim",
     "drawer_contact": "Bize Ulaşın",
     "drawer_announcements": "Duyurular",
+    "drawer_announcements_content": "Burası duyuruların verildiği sayfadır.",
     "drawer_survey": "Memnuniyet Anketi",
     "drawer_issue": "Şikayet Bildir",
     "drawer_pick_lang:": "Dil Seçiniz",
@@ -29,9 +31,13 @@
     "bus_stop_approaching": "Durağa Yaklaşan Hatlar",
     "bus_stop_busInfo_msg": "Hattın duraktan geçiş saatleri için tıklayınız. ",
     "bus_stop_remaining_time": " dk",
+    "bus_stop_no_vehicle": "Durağa yaklaşan araç bulunmamaktadır.",
+    "bus_stop_no_line": "Durağa tanımlı hat bulunmamaktadır.",
     "line_detail_timetable" : "Sefer Saatleri",
     "timetable_workingdays": "Hafta İçi",
     "timetable_saturday": "Cumartesi",
     "timetable_sunday": "Pazar/Tatil",
-    "timetable_direction": " Yönüne Gidiş"
+    "timetable_direction": " Yönüne Gidiş",
+    "line_stop_times_no_data": "Bu hatta ait aktif sefer bulunmamaktadır.",
+    "maps_title": "Harita"
 }

@@ -108,6 +108,94 @@ class _BusStopPageState extends State<BusStopPage> {
     return leading + rest;
   }
 
+  String formatter_new(String s) {
+    String kuplet = "";
+    String open = "[";
+    String close = "]";
+
+    s += "*";
+    kuplet += open;
+
+    if (s == "PLAN") return "[PLAN]";
+
+    for (int i = 0; i < s.length - 1; i++) {
+      if (int.tryParse(s[i]) != null) {
+        kuplet += s[i];
+      } else if (s[i] == " " && int.tryParse(s[i + 1]) == null) {
+        kuplet += close;
+      } else if (s[i] == " ") {
+        kuplet += " ";
+        kuplet += open;
+      }
+
+      if (s[i + 1] == "*") {
+        kuplet += close;
+      }
+    }
+    return kuplet;
+
+    /* bool flag = false;
+    returnVal += open;
+
+    int counter = 1;
+    if (s.length < 10) {
+      for (int i = 0; i < s.length; i++) {
+        if (int.tryParse(s[i]) != null && s[i] != " ") {
+          if (counter == 0) {
+            returnVal += open;
+            counter++;
+          }
+          returnVal += s[i];
+        } else if (counter == 1) {
+          returnVal += close;
+          returnVal += "";
+          counter--;
+
+          if(s[i+1] == null && counter == 0){
+            returnVal += "]";
+          }
+        }
+      }
+    } else {
+      for (int i = 0; i < s.length; i++) {
+        if (int.tryParse(s[i]) != null && s[i] != " " && flag == false) {
+          if (counter == 0) {
+            returnVal += open;
+            counter++;
+          }
+          returnVal += s[i];
+        } else if (counter == 1 && flag == false) {
+          returnVal += close;
+          returnVal += " ";
+          flag = true;
+        }
+        if (flag) {
+          for (int j = i; j < s.length; j++) {
+            if (s[j] != "-") returnVal += s[j];
+          }
+          break;
+        } */
+
+    //returnVal += s[i];
+
+    /* if(flag){
+        if(s[i] != "-"){
+          if(int.tryParse(s[i]) != null){
+            returnVal += s[i];
+          }else if(isSpace == false){
+            returnVal += " ";
+            returnVal += s[i];
+            isSpace = true;
+          }
+          else if(isSpace){
+            returnVal +=s[i];
+          }
+        }
+      } */
+    /*   }
+    } */
+  }
+
   String getTimetoStop1(String name) {
     for (var i = 0; i < aprLinesData.length; i++) {
       if (aprLinesData[i]["line"]["name"] == name) {
@@ -179,7 +267,7 @@ class _BusStopPageState extends State<BusStopPage> {
               inCheck();
               if (check) {
                 dbHelper.delete1(widget.busStopName);
-                //streamController.add(5);
+                streamController.add(5);
               } else {
                 _insert(widget.busStopName, widget.busStopCode);
                 streamController.add(5);
@@ -218,6 +306,20 @@ class _BusStopPageState extends State<BusStopPage> {
                   future: busLineData,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
+                      if (snapshot.data.length == 0) {
+                        return Column(
+                          //mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 1 / 20,
+                            ),
+                            Center(
+                              child: Text("bus_stop_no_line".tr()),
+                            )
+                          ],
+                        );
+                      }
                       return GridView.builder(
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
@@ -255,8 +357,8 @@ class _BusStopPageState extends State<BusStopPage> {
                           });
                     }
                     return Text(
-                      "", // can be written as error
-                      style: TextStyle(color: Colors.white),
+                      "bus_stop_no_line".tr(), // can be written as error
+                      style: TextStyle(color: Colors.black),
                     );
                   },
                 ),
@@ -289,6 +391,19 @@ class _BusStopPageState extends State<BusStopPage> {
                     future: selectionState == true ? fAprLines : aprLineData,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
+                        if (snapshot.data.length == 0 &&
+                            selectionState == false) {
+                          return Column(
+                            //mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 1 / 20,
+                              ),
+                              Center(child: Text("bus_stop_no_vehicle".tr()))
+                            ],
+                          );
+                        }
                         return ListView.builder(
                           // Changes with selectionState information
                           itemCount: selectionState == true
@@ -397,10 +512,16 @@ class _BusStopPageState extends State<BusStopPage> {
                                                   ? getTimetoStop(busLinesData[
                                                       _selectedIndexList1[
                                                           index]]["name"])
-                                                  : formatter(
-                                                          aprLinesData[index]
-                                                              ["doorNo"]) +
-                                                      " "),
+                                                  : (widget.busStopCode.length >
+                                                          5
+                                                      ? formatter_new(
+                                                              aprLinesData[index]
+                                                                  ["doorNo"]) +
+                                                          " "
+                                                      : formatter(
+                                                              aprLinesData[index]
+                                                                  ["doorNo"]) +
+                                                          " ")),
                                             ),
                                           ],
                                         ),
@@ -413,6 +534,7 @@ class _BusStopPageState extends State<BusStopPage> {
                                                   padding:
                                                       new EdgeInsets.all(0.0),
                                                   onPressed: () {
+                                                    //
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(

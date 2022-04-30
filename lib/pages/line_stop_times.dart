@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ui';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:kayseri_ulasim/busDetails/alt_line_detail2.dart';
@@ -66,6 +67,19 @@ class _StopTimesState extends State<StopTimes> {
             future: timeData,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
+                if (snapshot.data.length == 0) {
+                  return Column(
+                    //mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 1 / 20,
+                      ),
+                      Center(
+                        child: Text("line_stop_times_no_data".tr()),
+                      )
+                    ],
+                  );
+                }
                 return ListView.builder(
                     itemCount: data.length,
                     itemBuilder: (context, index) {

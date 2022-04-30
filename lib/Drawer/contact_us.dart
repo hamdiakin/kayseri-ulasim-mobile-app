@@ -1,3 +1,4 @@
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 
 class ContactUs extends StatelessWidget {
@@ -8,7 +9,7 @@ class ContactUs extends StatelessWidget {
     return new Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blueGrey.shade900,
-        title: Text("Contact Us"),
+        title: Text('drawer_contact'.tr(),),
       ),
       body: Center(
         child: SingleChildScrollView(

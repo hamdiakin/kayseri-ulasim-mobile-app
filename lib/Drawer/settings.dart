@@ -47,13 +47,19 @@ class _SettingsState extends State<Settings> {
     LanguageController controller = context.read<LanguageController>();
     return new Scaffold(
         appBar: AppBar(
+          leading: new IconButton(
+              icon: new Icon(Icons.arrow_back_ios_outlined),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }),
           title: Text("drawer_settings".tr()),
         ),
         drawer: NavigationDrawer(),
         body: Column(
           children: [
             SizedBox(
-              height: MediaQuery.of(context).size.height*3/153,
+              height: MediaQuery.of(context).size.height * 3 / 153,
             ),
             Card(
               child: ListTile(

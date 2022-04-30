@@ -123,403 +123,387 @@ class _LineTimingsState extends State<LineTimings> {
             ],
           ),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Center(
-                        child: Text(
-                      busName,
-                      style: TextStyle(fontSize: 15.0),
-                      textAlign: TextAlign.center,
-                    )),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 1 / 60,
-                    ),
-                    Center(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Wrap(
+                children: [
+                  Center(
                       child: Text(
-                        getStationName() + "timetable_direction".tr(),
-                        style: TextStyle(fontSize: 15.0, color: Colors.blue),
-                        textAlign: TextAlign.center,
+                    busName,
+                    style: TextStyle(fontSize: 15.0),
+                    textAlign: TextAlign.center,
+                  )),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 1 / 60,
+                  ),
+                  Center(
+                    child: Text(
+                      getStationName() + "timetable_direction".tr(),
+                      style: TextStyle(fontSize: 15.0, color: Colors.blue),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 2 / 50,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "timetable_workingdays".tr(),
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                            Container(
+                              height: (MediaQuery.of(context).size.height) *
+                                  13 /
+                                  20,
+                              child: FutureBuilder<List>(
+                                future: lineTimesFuture, //future of lineTimes
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return ListView.builder(
+                                        itemCount: snapshot.data
+                                            .length, //set the length to hole data length
+                                        itemBuilder: (BuildContext ctx, index) {
+                                          return decidedStation == false
+                                              ? //if the direction decided by USER is DEPARTURE
+                                              snapshot.data[index][
+                                                              "direction"] == //if the direction is DEPARTURE
+                                                          "DEPARTURE" &&
+                                                      snapshot.data[index]
+                                                              ["dayType"] ==
+                                                          "WORKDAY" //if it is workday
+                                                  ? Card(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Column(
+                                                          children: <Widget>[
+                                                            Text(snapshot
+                                                                    .data[index]
+                                                                ["time"]),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      shadowColor: Colors.grey)
+                                                  : SizedBox(
+                                                      height: 0.0,
+                                                      width: 0.0,
+                                                    )
+                                              : decidedStation == true
+                                                  ? //if the direction decided by USER is ARRIVAL
+                                                  snapshot.data[index][
+                                                                  "direction"] == //if the direction is ARRIVAL
+                                                              "ARRIVAL" &&
+                                                          snapshot.data[index]
+                                                                  ["dayType"] ==
+                                                              "WORKDAY"
+                                                      ? Card(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Column(
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(snapshot
+                                                                            .data[
+                                                                        index]
+                                                                    ["time"]),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          shadowColor:
+                                                              Colors.grey)
+                                                      : SizedBox(
+                                                          height: 0.0,
+                                                          width: 0.0,
+                                                        )
+                                                  : SizedBox(
+                                                      height: 0.0,
+                                                      width: 0.0,
+                                                    ); //if no data but SizedBox()
+                                        });
+                                  }
+                                  return LinearProgressIndicator(); //until data comes show linear progress indicator
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 1 / 50,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "timetable_workingdays".tr(),
-                                style: TextStyle(fontSize: 15.0),
-                              ),
-                              Container(
-                                height: (MediaQuery.of(context).size.height) *
-                                    13 /
-                                    20,
-                                child: FutureBuilder<List>(
-                                  future: lineTimesFuture, //future of lineTimes
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return ListView.builder(
-                                          itemCount: snapshot.data
-                                              .length, //set the length to hole data length
-                                          itemBuilder:
-                                              (BuildContext ctx, index) {
-                                            return decidedStation == false
-                                                ? //if the direction decided by USER is DEPARTURE
-                                                snapshot.data[index][
-                                                                "direction"] == //if the direction is DEPARTURE
-                                                            "DEPARTURE" &&
-                                                        snapshot.data[index]
-                                                                ["dayType"] ==
-                                                            "WORKDAY" //if it is workday
-                                                    ? Card(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                  snapshot.data[
-                                                                          index]
-                                                                      ["time"]),
-                                                            ],
-                                                          ),
+                      SizedBox(width: 10.0),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "timetable_saturday".tr(), //for SATURDAY column
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                            Container(
+                              height: (MediaQuery.of(context).size.height) *
+                                  13 /
+                                  20,
+                              child: FutureBuilder<List>(
+                                future: lineTimesFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return ListView.builder(
+                                        itemCount: snapshot.data.length,
+                                        itemBuilder: (BuildContext ctx, index) {
+                                          return decidedStation == false
+                                              ? (snapshot.data[index]
+                                                              ["direction"] ==
+                                                          "DEPARTURE" &&
+                                                      snapshot.data[index]
+                                                              ["dayType"] ==
+                                                          "SATURDAY"
+                                                  ? Card(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Column(
+                                                          children: <Widget>[
+                                                            Text(snapshot
+                                                                    .data[index]
+                                                                ["time"]),
+                                                          ],
                                                         ),
-                                                        shadowColor:
-                                                            Colors.grey)
-                                                    : SizedBox(
-                                                        height: 0.0,
-                                                        width: 0.0,
-                                                      )
-                                                : decidedStation == true
-                                                    ? //if the direction decided by USER is ARRIVAL
-                                                    snapshot.data[index][
-                                                                    "direction"] == //if the direction is ARRIVAL
-                                                                "ARRIVAL" &&
-                                                            snapshot.data[index]
-                                                                    [
-                                                                    "dayType"] ==
-                                                                "WORKDAY"
-                                                        ? Card(
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Column(
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(snapshot
-                                                                              .data[
-                                                                          index]
-                                                                      ["time"]),
-                                                                ],
-                                                              ),
+                                                      ),
+                                                      shadowColor: Colors.grey)
+                                                  : SizedBox(
+                                                      height: 0.0,
+                                                      width: 0.0,
+                                                    ))
+                                              : decidedStation == true
+                                                  ? snapshot.data[index][
+                                                                  "direction"] ==
+                                                              "ARRIVAL" &&
+                                                          snapshot.data[index]
+                                                                  ["dayType"] ==
+                                                              "SATURDAY"
+                                                      ? Card(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Column(
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(snapshot
+                                                                            .data[
+                                                                        index]
+                                                                    ["time"]),
+                                                              ],
                                                             ),
-                                                            shadowColor:
-                                                                Colors.grey)
-                                                        : SizedBox(
-                                                            height: 0.0,
-                                                            width: 0.0,
-                                                          )
-                                                    : SizedBox(
-                                                        height: 0.0,
-                                                        width: 0.0,
-                                                      ); //if no data but SizedBox()
-                                          });
-                                    }
-                                    return LinearProgressIndicator(); //until data comes show linear progress indicator
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        SizedBox(width: 10.0),
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "timetable_saturday".tr(), //for SATURDAY column
-                                style: TextStyle(fontSize: 15.0),
-                              ),
-                              Container(
-                                height: (MediaQuery.of(context).size.height) *
-                                    13 /
-                                    20,
-                                child: FutureBuilder<List>(
-                                  future: lineTimesFuture,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return ListView.builder(
-                                          itemCount: snapshot.data.length,
-                                          itemBuilder:
-                                              (BuildContext ctx, index) {
-                                            return decidedStation == false
-                                                ? (snapshot.data[index]
-                                                                ["direction"] ==
-                                                            "DEPARTURE" &&
-                                                        snapshot.data[index]
-                                                                ["dayType"] ==
-                                                            "SATURDAY"
-                                                    ? Card(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                  snapshot.data[
-                                                                          index]
-                                                                      ["time"]),
-                                                            ],
                                                           ),
-                                                        ),
-                                                        shadowColor:
-                                                            Colors.grey)
-                                                    : SizedBox(
-                                                        height: 0.0,
-                                                        width: 0.0,
-                                                      ))
-                                                : decidedStation == true
-                                                    ? snapshot.data[index][
-                                                                    "direction"] ==
-                                                                "ARRIVAL" &&
-                                                            snapshot.data[index]
-                                                                    [
-                                                                    "dayType"] ==
-                                                                "SATURDAY"
-                                                        ? Card(
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Column(
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(snapshot
-                                                                              .data[
-                                                                          index]
-                                                                      ["time"]),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            shadowColor:
-                                                                Colors.grey)
-                                                        : SizedBox(
-                                                            height: 0.0,
-                                                            width: 0.0,
-                                                          )
-                                                    : SizedBox(
-                                                        height: 0.0,
-                                                        width: 0.0,
-                                                      );
-                                          });
-                                    }
-                                    return LinearProgressIndicator();
-                                  },
-                                ),
+                                                          shadowColor:
+                                                              Colors.grey)
+                                                      : SizedBox(
+                                                          height: 0.0,
+                                                          width: 0.0,
+                                                        )
+                                                  : SizedBox(
+                                                      height: 0.0,
+                                                      width: 0.0,
+                                                    );
+                                        });
+                                  }
+                                  return LinearProgressIndicator();
+                                },
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 10.0),
-                        Flexible(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                "timetable_sunday".tr(), //For SUNDAY column
-                                style: TextStyle(fontSize: 15.0),
-                              ),
-                              Container(
-                                height: (MediaQuery.of(context).size.height) *
-                                    13 /
-                                    20,
-                                child: FutureBuilder<List>(
-                                  future: lineTimesFuture,
-                                  builder: (context, snapshot) {
-                                    if (snapshot.hasData) {
-                                      return ListView.builder(
-                                          itemCount: snapshot.data.length,
-                                          itemBuilder:
-                                              (BuildContext ctx, index) {
-                                            return decidedStation == false
-                                                ? snapshot.data[index]
-                                                                ["direction"] ==
-                                                            "DEPARTURE" &&
-                                                        snapshot.data[index]
-                                                                ["dayType"] ==
-                                                            "SUNDAY"
-                                                    ? Card(
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Column(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                  snapshot.data[
-                                                                          index]
-                                                                      ["time"]),
-                                                            ],
+                      ),
+                      SizedBox(width: 10.0),
+                      Flexible(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "timetable_sunday".tr(), //For SUNDAY column
+                              style: TextStyle(fontSize: 15.0),
+                            ),
+                            Container(
+                              height: (MediaQuery.of(context).size.height) *
+                                  13 /
+                                  20,
+                              child: FutureBuilder<List>(
+                                future: lineTimesFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasData) {
+                                    return ListView.builder(
+                                        itemCount: snapshot.data.length,
+                                        itemBuilder: (BuildContext ctx, index) {
+                                          return decidedStation == false
+                                              ? snapshot.data[index]
+                                                              ["direction"] ==
+                                                          "DEPARTURE" &&
+                                                      snapshot.data[index]
+                                                              ["dayType"] ==
+                                                          "SUNDAY"
+                                                  ? Card(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(8.0),
+                                                        child: Column(
+                                                          children: <Widget>[
+                                                            Text(snapshot
+                                                                    .data[index]
+                                                                ["time"]),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      shadowColor: Colors.grey)
+                                                  : SizedBox(
+                                                      height: 0.0,
+                                                      width: 0.0,
+                                                    )
+                                              : decidedStation == true
+                                                  ? snapshot.data[index][
+                                                                  "direction"] ==
+                                                              "ARRIVAL" &&
+                                                          snapshot.data[index]
+                                                                  ["dayType"] ==
+                                                              "SUNDAY"
+                                                      ? Card(
+                                                          child: Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(8.0),
+                                                            child: Column(
+                                                              children: <
+                                                                  Widget>[
+                                                                Text(snapshot
+                                                                            .data[
+                                                                        index]
+                                                                    ["time"]),
+                                                              ],
+                                                            ),
                                                           ),
-                                                        ),
-                                                        shadowColor:
-                                                            Colors.grey)
-                                                    : SizedBox(
-                                                        height: 0.0,
-                                                        width: 0.0,
-                                                      )
-                                                : decidedStation == true
-                                                    ? snapshot.data[index][
-                                                                    "direction"] ==
-                                                                "ARRIVAL" &&
-                                                            snapshot.data[index]
-                                                                    [
-                                                                    "dayType"] ==
-                                                                "SUNDAY"
-                                                        ? Card(
-                                                            child: Padding(
-                                                              padding:
-                                                                  const EdgeInsets
-                                                                      .all(8.0),
-                                                              child: Column(
-                                                                children: <
-                                                                    Widget>[
-                                                                  Text(snapshot
-                                                                              .data[
-                                                                          index]
-                                                                      ["time"]),
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            shadowColor:
-                                                                Colors.grey)
-                                                        : SizedBox(
-                                                            height: 0.0,
-                                                            width: 0.0,
-                                                          )
-                                                    : SizedBox(
-                                                        height: 0.0,
-                                                        width: 0.0,
-                                                      );
-                                          });
-                                    }
-                                    return LinearProgressIndicator();
-                                  },
-                                ),
+                                                          shadowColor:
+                                                              Colors.grey)
+                                                      : SizedBox(
+                                                          height: 0.0,
+                                                          width: 0.0,
+                                                        )
+                                                  : SizedBox(
+                                                      height: 0.0,
+                                                      width: 0.0,
+                                                    );
+                                        });
+                                  }
+                                  return LinearProgressIndicator();
+                                },
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              SizedBox(
-                height: 15,
+            ),
+            RollingSwitch.icon(
+              onChanged: (bool state) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (state) {
+                    setState(() {
+                      decidedStation = true;
+                    });
+                  } else {
+                    setState(() {
+                      decidedStation = false;
+                    });
+                  }
+                });
+              },
+              rollingInfoRight: RollingIconInfo(
+                icon: Icons.arrow_forward_rounded,
+                text: Text("Departure"),
               ),
-              RollingSwitch.icon(
+              rollingInfoLeft: RollingIconInfo(
+                icon: Icons.arrow_back_rounded,
+                backgroundColor: Colors.grey,
+                text: Text("Arrival"),
+              ),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
+            /* Center(
+              child: LiteRollingSwitch(
+                //initial value
+                value: true,
+                textOn: 'Departure',
+                textOff: 'Arrival',
+                colorOn: Colors.blueGrey,
+                colorOff: Colors.blue,
+                iconOn: Icons.arrow_forward_rounded,
+                iconOff: Icons.arrow_back_rounded,
+                textSize: 14.0,
                 onChanged: (bool state) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (state) {
                       setState(() {
-                        decidedStation = true;
+                        decidedStation = false;
                       });
                     } else {
                       setState(() {
-                        decidedStation = false;
+                        decidedStation = true;
                       });
                     }
                   });
+                  //Use it to manage the different states
+              
+                  print('Current State of SWITCH IS: $state');
                 },
-                rollingInfoRight: RollingIconInfo(
-                  icon: Icons.arrow_forward_rounded,
-                  text: Text("Departure"),
-                ),
-                rollingInfoLeft: RollingIconInfo(
-                  icon: Icons.arrow_back_rounded,
-                  backgroundColor: Colors.grey,
-                  text: Text("Arrival"),
-                ),
               ),
-              SizedBox(height: MediaQuery.of(context).size.height * 1 / 40),
-              /* Center(
-                child: LiteRollingSwitch(
-                  //initial value
-                  value: true,
-                  textOn: 'Departure',
-                  textOff: 'Arrival',
-                  colorOn: Colors.blueGrey,
-                  colorOff: Colors.blue,
-                  iconOn: Icons.arrow_forward_rounded,
-                  iconOff: Icons.arrow_back_rounded,
-                  textSize: 14.0,
-                  onChanged: (bool state) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      if (state) {
-                        setState(() {
-                          decidedStation = false;
-                        });
-                      } else {
-                        setState(() {
-                          decidedStation = true;
-                        });
-                      }
-                    });
-                    //Use it to manage the different states
-                
-                    print('Current State of SWITCH IS: $state');
-                  },
+            ), */
+
+            /* Container(
+                /* width: MediaQuery.of(context).size.width * 5 /20,
+                height: MediaQuery.of(context).size.height * 3 / 20, */
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: LiteRollingSwitch(
+                          //initial value
+                          value: true,
+                          textOn: 'Arrival',
+                          textOff: 'Departure',
+                          colorOn: Colors.greenAccent[700],
+                          colorOff: Colors.redAccent[700],
+                          iconOn: Icons.arrow_forward_rounded,
+                          iconOff: Icons.arrow_back_rounded,
+                          textSize: 14.0,
+                          onChanged: (bool state) {
+                            //Use it to manage the different states
+                            print('Current State of SWITCH IS: $state');
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ), */
-
-              /* Container(
-                  /* width: MediaQuery.of(context).size.width * 5 /20,
-                  height: MediaQuery.of(context).size.height * 3 / 20, */
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: LiteRollingSwitch(
-                            //initial value
-                            value: true,
-                            textOn: 'Arrival',
-                            textOff: 'Departure',
-                            colorOn: Colors.greenAccent[700],
-                            colorOff: Colors.redAccent[700],
-                            iconOn: Icons.arrow_forward_rounded,
-                            iconOff: Icons.arrow_back_rounded,
-                            textSize: 14.0,
-                            onChanged: (bool state) {
-                              //Use it to manage the different states
-                              print('Current State of SWITCH IS: $state');
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ), */
-            ],
-          ),
+          ],
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 
 class AboutKayseri extends StatelessWidget {
@@ -5,7 +6,7 @@ class AboutKayseri extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: AppBar(
-          title: Text("About Kayseri"),
+          title: Text('drawer_about_city'.tr(),),
         ),
         body: Center(
             child: SingleChildScrollView(

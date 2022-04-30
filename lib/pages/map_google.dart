@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:easy_localization/src/public_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
@@ -110,7 +111,7 @@ class _mapGoogleState extends State<mapGoogle> {
   Future<String> getData1(double lat, double long) async {
     var response = await http.get(
         Uri.parse(
-            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat + 0.012},${long - 0.012},${lat + 0.012},${long + 0.012},${lat - 0.012},${long - 0.012},${lat - 0.012},${long + 0.012}"),
+            "http://kaktusmobile.kayseriulasim.com.tr/api/rest/busstops/borders=${lat + 0.015},${long - 0.015},${lat + 0.015},${long + 0.015},${lat - 0.015},${long - 0.015},${lat - 0.015},${long + 0.015}"),
         headers: {"Accept": "application/json"});
     this.data1 = jsonDecode(response.body);
 
@@ -217,7 +218,7 @@ class _mapGoogleState extends State<mapGoogle> {
           icon: new Icon(Icons.arrow_back_ios_outlined),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text('Maps Sample'),
+        title: Text('maps_title'.tr()),
         backgroundColor: Colors.blueGrey.shade900,
       ),
       body: Stack(
@@ -227,7 +228,7 @@ class _mapGoogleState extends State<mapGoogle> {
             myLocationButtonEnabled: true,
             zoomControlsEnabled: true,
             mapToolbarEnabled: false,
-            minMaxZoomPreference: MinMaxZoomPreference(2, 17),
+            minMaxZoomPreference: MinMaxZoomPreference(11, 17),
             onCameraMove: (CameraPosition position) {
               print(position.zoom);
               if (position.zoom < 14) {
