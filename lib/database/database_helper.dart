@@ -12,6 +12,7 @@ class DatabaseHelper {
   static final columnId = '_id';
   static final columnName = 'name';
   static final columnCode = 'code';
+  static final columnType = 'type';
 
   DatabaseHelper._privateConstructor();
   static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
@@ -38,7 +39,8 @@ class DatabaseHelper {
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY ,
             $columnName TEXT NOT NULL,
-            $columnCode TEXT NOT NULL
+            $columnCode TEXT NOT NULL,
+            $columnType TEXT NOT NULL
           )
           ''');
   }

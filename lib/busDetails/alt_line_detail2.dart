@@ -9,9 +9,12 @@ import 'line_information.dart';
 import 'line_timings.dart';
 import 'package:location/location.dart';
 import 'dart:math' show cos, sqrt, asin;
+import 'package:kayseri_ulasim/database/database_helper.dart';
 
 StreamController<int> streamControllerScroll =
     StreamController<int>.broadcast();
+
+StreamController<int> streamController1 = StreamController<int>();
 
 class AltLineDetail2 extends StatefulWidget {
   final String busStopName; //get from other page to see the details
@@ -24,8 +27,38 @@ class AltLineDetail2 extends StatefulWidget {
 }
 
 class _AltLineDetail2State extends State<AltLineDetail2> {
-  // For more smooth experience
+  // For local database
+  final dbHelper = DatabaseHelper.instance;
 
+    // To check if exist in the db
+  bool check = false;
+  inCheck() async {
+    bool propCheck = await dbHelper.ifContains(widget.busStopName);
+    print("Is exist: $propCheck");
+    setState(() {
+      check = propCheck;
+    });
+  }
+
+    void _insert(String name1, String code2, String type) async {
+    // row to insert
+
+    Map<String, dynamic> row = {
+      DatabaseHelper.columnName: '$name1',
+      DatabaseHelper.columnCode: '$code2',
+      DatabaseHelper.columnType: '$type'
+    };
+    final id = await dbHelper.insert(row);
+    print('inserted row id: $id');
+  }
+
+    void _query() async {
+    final allRows = await dbHelper.queryAllRows();
+    print('query all rows:');
+    allRows.forEach(print);
+  }
+
+  // For more smooth experience
   bool nearStop = false;
   Stream<int> stream = streamControllerScroll.stream;
   mySetState(int x) {
@@ -290,6 +323,7 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
     stream.listen((index) {
       mySetState(index);
     });
+    inCheck();
     getLoc();
     getBusLine();
     getBusLineArr();
@@ -327,6 +361,32 @@ class _AltLineDetail2State extends State<AltLineDetail2> {
                   scrollDirection: Axis.horizontal,
                   child: Text("$busStopName")))
         ]), // the name of bus got from busStop page
+        actions: <Widget>[
+          IconButton(
+            icon: check == true
+                ? Icon(
+                    Icons.star,
+                    color: Colors.yellowAccent,
+                  )
+                : Icon(
+                    Icons.star_border,
+                    color: Colors.yellowAccent,
+                  ),
+            onPressed: () {
+              inCheck();
+              if (check) {
+                dbHelper.delete1(widget.busStopName);
+                streamController1.add(5);
+              } else {
+                _insert(widget.busStopName, widget.busCode, widget.busCode.length > 5 ? "tram_line" : "bus_line");
+                streamController1.add(5);
+              }
+
+              _query();
+              inCheck();
+            },
+          )
+        ],
       ),
       /*  Row(children: [
           Expanded(

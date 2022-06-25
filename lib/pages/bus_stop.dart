@@ -210,7 +210,7 @@ class _BusStopPageState extends State<BusStopPage> {
   bool check = false;
   inCheck() async {
     bool propCheck = await dbHelper.ifContains(widget.busStopName);
-    print(propCheck);
+    print("Is exist: $propCheck");
     setState(() {
       check = propCheck;
     });
@@ -616,7 +616,8 @@ class _BusStopPageState extends State<BusStopPage> {
 
     Map<String, dynamic> row = {
       DatabaseHelper.columnName: '$name1',
-      DatabaseHelper.columnCode: '$code2'
+      DatabaseHelper.columnCode: '$code2',
+      DatabaseHelper.columnType: 'bus_stop'
     };
     final id = await dbHelper.insert(row);
     print('inserted row id: $id');

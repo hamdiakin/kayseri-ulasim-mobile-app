@@ -194,6 +194,7 @@ class _mapGoogleState extends State<mapGoogle> {
     }
   }
 
+
   bool isIOS = Platform.isIOS;
 
   BitmapDescriptor pinLocationIcon;
@@ -228,7 +229,7 @@ class _mapGoogleState extends State<mapGoogle> {
             myLocationButtonEnabled: true,
             zoomControlsEnabled: true,
             mapToolbarEnabled: false,
-            minMaxZoomPreference: MinMaxZoomPreference(11, 17),
+            minMaxZoomPreference: MinMaxZoomPreference(16, 17),
             onCameraMove: (CameraPosition position) {
               print(position.zoom);
               if (position.zoom < 14) {

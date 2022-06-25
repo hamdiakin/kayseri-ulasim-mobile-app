@@ -133,10 +133,14 @@ class _LineTimingsState extends State<LineTimings> {
               child: Wrap(
                 children: [
                   Center(
-                      child: Text(
-                    busName,
-                    style: TextStyle(fontSize: 15.0),
-                    textAlign: TextAlign.center,
+                      child: FittedBox(
+                    child: Text(
+                      busName,
+                      style: TextStyle(fontSize: 15.0),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      softWrap: true,
+                    ),
                   )),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 1 / 60,

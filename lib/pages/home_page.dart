@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kayseri_ulasim/Drawer/navigation_drawer.dart';
 import 'package:http/http.dart' as http;
+import 'package:kayseri_ulasim/busDetails/alt_line_detail2.dart';
 import 'package:kayseri_ulasim/controller/language_controller.dart';
 import 'package:kayseri_ulasim/database/database_helper.dart';
 import 'package:kayseri_ulasim/database/db_helper_alarm.dart';
@@ -17,6 +18,7 @@ import 'package:kayseri_ulasim/pages/search_page1.dart';
 import 'package:provider/src/provider.dart';
 
 StreamController<int> streamController = StreamController<int>();
+StreamController<int> streamController1 = StreamController<int>();
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -29,6 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // to control the other page
   Stream<int> stream = streamController.stream;
+  Stream<int> stream1 = streamController1.stream;
 
   void mySetState(int x) {
     getFavorites();
@@ -140,6 +143,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     stream.listen((index) {
+      mySetState(index);
+    });
+    stream1.listen((index) {
       mySetState(index);
     });
     _getUserLocation();
@@ -303,18 +309,33 @@ class _MyHomePageState extends State<MyHomePage> {
                                       children: <Widget>[
                                         ListTile(
                                           onTap: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        BusStopPage(
-                                                          busStopCode:
-                                                              favDB[index]
-                                                                  ["code"],
-                                                          busStopName:
+                                            if (favDB[index]['type'] ==
+                                                    "tram_line" ||
+                                                favDB[index]['type'] ==
+                                                    "bus_line") {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          AltLineDetail2(
                                                               favDB[index]
                                                                   ["name"],
-                                                        )));
+                                                              favDB[index]
+                                                                  ["code"])));
+                                            } else {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          BusStopPage(
+                                                            busStopCode:
+                                                                favDB[index]
+                                                                    ["code"],
+                                                            busStopName:
+                                                                favDB[index]
+                                                                    ["name"],
+                                                          )));
+                                            }
                                           },
                                           leading:
                                               favDB[index]["code"].length > 5
@@ -370,7 +391,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 children: [
                                   SizedBox(
                                     height: MediaQuery.of(context).size.height *
-                                        1/20,
+                                        1 /
+                                        20,
                                   ),
                                   Center(
                                     child: Text("home_no_stop".tr()),
@@ -437,7 +459,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ),
                                 SizedBox(
-                                  height: 5.23,
+                                  height: 3.23,
                                 ),
                               ],
                             );
